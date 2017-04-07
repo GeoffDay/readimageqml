@@ -5,7 +5,6 @@
 #include <QDir>
 #include <QFile>
 #include <QImage>
-#include <QWidget>
 #include <QVector>
 #include <QPainter>
 #include <QByteArray>
@@ -22,13 +21,13 @@ public:
 public slots:
     QStringList listArfFiles(QFileInfo);            // for next and prev file buttons
 
-    void getStartFrame(int);                        // from arfPos.qml code
-    void getEndFrame(int);
-    void getCurrentFrame(int);
+    void setStartFrame(int);                        // from arfPos.qml code
+    void setEndFrame(int);
+    void setCurrentFrame(int);
 
     void setCTType(bool);
-    void getMin(int);                               // from paletteRanges.qml code
-    void getMax(int);
+    void minLevel(int);                               // from paletteRanges.qml code
+    void maxLevel(int);
     void setImageNumber(int);
     void genGreyColourTable(quint16, quint16);
     void genLCIIColourTable(quint16, quint16);
@@ -48,7 +47,7 @@ public slots:
     void zoomIn();
     void zoomOut();
     bool getHeaderData();
-    int getImage(int, int);
+    int  getImage(int, int);
     void exportARF();
     void exportBMP();
     bool begin();

@@ -1,7 +1,15 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>Page1.qml</file>
-        <file>Page1Form.ui.qml</file>
+        <file>MyButton.qml</file>
+        <file>playback_end.png</file>
+        <file>playback_begin.png</file>
+        <file>playback_ff.png</file>
+        <file>playback_pause.png</file>
+        <file>playback_rew.png</file>
+        <file>playback_play.png</file>
+        <file>playback_loop.png</file>
+        <file>playback_once.png</file>
+        <file>CheckButton.qml</file>
     </qresource>
 </RCC>
