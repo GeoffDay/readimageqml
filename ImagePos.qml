@@ -1,20 +1,20 @@
-import QtQuick 1.1
+import QtQuick 2.7
 
 //this is the arfPos.qml files from BigArfPlayer
 
 
 Item {
-    id: ImagePos
+    id: imagePos
     width: 100
     height: 25
-    y: 0
+    y: 55
 
     property int nFrames: 5           //number of frames in the file
     property int startFrame: 1
     property int endFrame: 5
     property int currentFrame: 1     //currently displayed frame
 
-    property double iScale: (ImagePos.width - (2 * currentPointer.width)) / (nFrames - 1)
+    property double iScale: (imagePos.width - (2 * currentPointer.width)) / (nFrames - 1)
 
     Rectangle {
         id: filePosBackGround
@@ -55,7 +55,7 @@ Item {
     Rectangle {
         id: centreBar
         width: filePosBackGround.width - filePosBackGround.height / 2.0
-        height: ImagePos.height / 40
+        height: imagePos.height / 40
         color: "#faff00"
         radius: 2
         anchors.centerIn: filePosBackGround
@@ -71,7 +71,7 @@ Item {
         Image {
              width: 30; height: 30
              smooth: true
-             source: "current.svg"
+             source: "current.png"
          }
 
         Text {
@@ -79,7 +79,7 @@ Item {
              anchors {centerIn: parent; verticalCenterOffset: -4; horizontalCenterOffset: 3}
             font.pixelSize: parent.height * 0.5
             style: Text.Sunken; color: "white"; styleColor: "black"; smooth: true
-            text: 1 + Math.round((currentPointer.x - currentPointer.width / 2) / (ImagePos.width - (2 * currentPointer.width)) * (nFrames - 1))
+            text: 1 + Math.round((currentPointer.x - currentPointer.width / 2) / (imagePos.width - (2 * currentPointer.width)) * (nFrames - 1))
         }
 
         MouseArea {
@@ -87,10 +87,10 @@ Item {
             anchors.fill: currentPointer
             drag.target: currentPointer
             drag.axis: Drag.XAxis
-            drag.minimumX: 0; drag.maximumX: ImagePos.width - currentPointer.width
+            drag.minimumX: 0; drag.maximumX: imagePos.width - currentPointer.width
         }
 
-        onXChanged: ImagePosObject.getCurrentFrame(1 + Math.round((currentPointer.x - currentPointer.width / 2)/ (ImagePos.width - (2 * currentPointer.width)) * (nFrames - 1)))
+        onXChanged: imagePosObject.getCurrentFrame(1 + Math.round((currentPointer.x - currentPointer.width / 2)/ (imagePos.width - (2 * currentPointer.width)) * (nFrames - 1)))
 
     }
 
@@ -104,7 +104,7 @@ Item {
         Image {
              width: 30; height: 30
              smooth: true
-             source: "start.svg"
+             source: "start.png"
          }
 
         Text {
@@ -123,7 +123,7 @@ Item {
             drag.minimumX: 0; drag.maximumX: endPointer.x - endPointer.width
         }
 
-        onXChanged: ImagePosObject.getStartFrame(1 + Math.round(startPointer.x / iScale))
+//        onXChanged: imagePosObject.getStartFrame(1 + Math.round(startPointer.x / iScale))
     }
 
 
@@ -136,7 +136,7 @@ Item {
         Image {
              width: 30; height: 30
              smooth: true
-             source: "end.svg"
+             source: "end.png"
          }
 
 
@@ -153,12 +153,12 @@ Item {
             anchors.fill: endPointer
             drag.target: endPointer
             drag.axis: Drag.XAxis
-            drag.minimumX: startPointer.x + startPointer.width; drag.maximumX: ImagePos.width - endPointer.width
+            drag.minimumX: startPointer.x + startPointer.width; drag.maximumX: imagePos.width - endPointer.width
         }
 
-        onXChanged: {ImagePosObject.getEndFrame(1 + Math.round((endPointer.x - startPointer.width) / iScale))
-            console.log("end value ", endFrame)
-        }
+//        onXChanged: {imagePosObject.getEndFrame(1 + Math.round((endPointer.x - startPointer.width) / iScale))
+//            console.log("end value ", endFrame)
+//        }
     }
 
 }

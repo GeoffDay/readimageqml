@@ -11,5 +11,9 @@
         <file>playback_loop.png</file>
         <file>playback_once.png</file>
         <file>CheckButton.qml</file>
+        <file>current.png</file>
+        <file>end.png</file>
+        <file>ImagePos.qml</file>
+        <file>start.png</file>
     </qresource>
 </RCC>
