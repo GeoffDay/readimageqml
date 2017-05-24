@@ -25,8 +25,10 @@ class ReadImage : public QQuickPaintedItem
 public:
     ReadImage(QQuickItem *parent = 0);
 
-    QStringList listArfFiles(QFileInfo);            // for next and prev file buttons
+    QStringList listIFiles(QFileInfo);            // for next and prev file buttons
     Q_INVOKABLE bool openIFileName(QString);
+    Q_INVOKABLE void setMagnification(int);
+
     int getBinImage(int, int);
 
     QString name() const;
@@ -34,25 +36,24 @@ public:
     void setName(const QString &name);
     void paint(QPainter *painter);
     quint32 Magnification() const;
-    Q_INVOKABLE void setMagnification(int);
 
-    Q_INVOKABLE void clearChart();
+
 
 
 signals:
-    void chartCleared();
-
+    void currFrame(int);
 
 private:
-     QFile file, exportFile;
-     quint32 filePos, beginPos, endPos;
-     QString dirStr;
-     QString iFileName, iExt, exportFileName;
-     QStringList arfFileList;
+        QFile file, exportFile;
+        QString dirStr;
+        QString iFileName, iExt, exportFileName;
+        QStringList iFileList;
+        quint32 filePos, beginPos, endPos;
 
-
-    quint32  magnification;
-    QString m_name;
+        double pixelScale;
+        quint32 iWidth, iHeight, xPos, yPos;
+        quint32  magnification;
+        QString m_name;
 };
 
 #endif // READIMAGE_H
