@@ -11,7 +11,7 @@ ApplicationWindow {
     visible: true
 
     width: Screen.width - 600
-    height: Screen.height - 100
+    height: Screen.height - 200
 
     onWindowStateChanged: {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
@@ -19,18 +19,13 @@ ApplicationWindow {
 
     title: qsTr("Player")
 
-//    Column {
-//        spacing: 2
-//        anchors.centerIn: mainWindow
-//        x: 0
-//        y: 0
 
         ReadImage {
-            id: aPieChart
+            id: aBinImageFile
             anchors.centerIn: parent
             width: 100; height: 100
-            name: "bob"
-            onChartCleared: console.log("The chart has been cleared")
+            name: "bif"
+//            onChartCleared: console.log("The chart has been cleared")
         }
 
         ImagePos {
@@ -123,12 +118,16 @@ ApplicationWindow {
             }
 
 
+
             ComboBox {
                 id: fRate
                 height: 32
                 font.pointSize: 16
                 textRole: "FrameRate"
+
+                displayText: "Frame Rate " + currentText
                 model: ListModel {
+                    id: fRates
                     ListElement { FrameRate: "50 fps"; value: 20 }
                     ListElement { FrameRate: "25 fps"; value: 40 }
                     ListElement { FrameRate: "10 fps"; value: 100 }
@@ -138,13 +137,17 @@ ApplicationWindow {
                 }
 
                 background: Rectangle {
-                              color: "#86b88a"
-                              border.color: "#76782a"
-                              border.width: 1
+                    color: "#86b88a"
+                    implicitWidth: 250
+                    implicitHeight: 32
+                    border.color: "#76782a"
+                    border.width: 1
                 }
+
                 onActivated: {
-                    console.log("setting mag as a text " + 32)
-                    aPieChart.setMagnification(32)
+               //     timer.interval: textRole.valueOf(currentIndex.value)
+                    console.log("setting mag as a text " + fRates.get(currentIndex).value)
+
                 }
               }
 
@@ -152,7 +155,8 @@ ApplicationWindow {
                 annunc: "Export"
                 frColor: "#303030"
                 bkColor: "#b6a0b0"
-                bdColor: "#76782a"
+                bdColor: "#7678da"
+
                 onActivated: {
                       console.log("export button pressed")
                 }
@@ -167,14 +171,15 @@ ApplicationWindow {
                 background: Rectangle {
                               color: "#b6a0b0"
                               border.color: "#76782a"
+                              implicitWidth: 120
                               border.width: 1
                 }
 
                 model: ListModel {
-                    ListElement { Xport: "BIN"; value: 20 }
-                    ListElement { Xport: "ARF"; value: 20 }
-                    ListElement { Xport: "BMP"; value: 40 }
-                    ListElement { Xport: "AVI"; value: 20 }
+                    ListElement { Xport: "as BIN"; value: 20 }
+                    ListElement { Xport: "as ARF"; value: 20 }
+                    ListElement { Xport: "as BMP"; value: 40 }
+                    ListElement { Xport: "as AVI"; value: 20 }
                 }
               }
 
@@ -233,11 +238,12 @@ ApplicationWindow {
 
 
     Timer {
+        id: timer
         interval: 1000
-        running: true
+        running: false
         repeat: true
         triggeredOnStart: true
-        onTriggered: time.text = Date().toString()
+        onTriggered: aBinImageFile.timerTimeout()
     }
 
     Text {
@@ -252,7 +258,9 @@ ApplicationWindow {
         folder: shortcuts.home
         onAccepted: {
             console.log("You chose: " + fileDialog.fileUrls)
-            aPieChart.openIFileName(fileDialog.fileUrls)
+            aBinImageFile.openIFileName(fileDialog.fileUrls)
+            timer.start
+
         }
         onRejected: {
             console.log("Cancelled")
