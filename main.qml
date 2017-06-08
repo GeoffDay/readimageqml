@@ -80,14 +80,14 @@ ApplicationWindow {
                 height: 32
                 Image {source: "playback_rew.png"}
 
-                onClicked: {console.log("begin button pressed")}
+                onClicked: {console.log("rewind 1 button pressed")}
             }
             Button {
                 width: 32
                 height: 32
                 Image {source: "playback_play.png"}
 
-                onClicked: {console.log("back button pressed")}
+                onClicked: {console.log("play button pressed")}
             }
             Button {
                 width: 32
@@ -114,7 +114,7 @@ ApplicationWindow {
             CheckButton {
                 id: loopy
                 on: true
-                onFlipped: { console.log("loop " + tsState)}
+                onFlipped: {aBinImageFile.loop(tsState)}
             }
 
 
@@ -145,9 +145,9 @@ ApplicationWindow {
                 }
 
                 onActivated: {
-               //     timer.interval: textRole.valueOf(currentIndex.value)
+                    timer.interval = fRates.get(currentIndex).value
                     console.log("setting mag as a text " + fRates.get(currentIndex).value)
-
+//                    timer.start()
                 }
               }
 
@@ -232,9 +232,7 @@ ApplicationWindow {
                      return Number.fromLocaleString(locale, text) * 1000
                  }
              }
-
         }
-//    }
 
 
     Timer {
@@ -246,10 +244,7 @@ ApplicationWindow {
         onTriggered: aBinImageFile.timerTimeout()
     }
 
-    Text {
-        id: time
-//        y: 360
-    }
+
 
     FileDialog {
         id: fileDialog
