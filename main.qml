@@ -73,42 +73,67 @@ ApplicationWindow {
                     height: 32
                 Image {source: "playback_begin.png"}
 
-                onClicked: {console.log("begin button pressed")}
+                onClicked: {
+                    console.log("begin button pressed")
+                    aBinImageFile.begin()
+                }
             }
+
             Button {
                 width: 32
                 height: 32
                 Image {source: "playback_rew.png"}
 
-                onClicked: {console.log("rewind 1 button pressed")}
+                onClicked: {
+                    console.log("rewind 1 button pressed")
+                    aBinImageFile.back()
+                }
             }
+
             Button {
                 width: 32
                 height: 32
                 Image {source: "playback_play.png"}
 
-                onClicked: {console.log("play button pressed")}
+                onClicked: {
+                    console.log("play button pressed")
+                    aBinImageFile.play()
+                    timer.start()
+                }
             }
+
             Button {
                 width: 32
                 height: 32
                 Image {source: "playback_pause.png"}
 
-                onClicked: {console.log("pause button pressed")}
+                onClicked: {
+                    console.log("pause button pressed")
+                    timer.stop()
+                    aBinImageFile.pause()
+                }
             }
+
             Button {
                 width: 32
                 height: 32
                 Image {source: "playback_ff.png"}
 
-                onClicked: {console.log("forward button pressed")}
+                onClicked: {
+                    console.log("forward button pressed")
+                    aBinImageFile.forward()
+                }
             }
+
             Button {
                 width: 32
                 height: 32
                 Image {source: "playback_end.png"}
 
-                onClicked: {console.log("end button pressed")}
+                onClicked: {
+                    console.log("end button pressed")
+                    aBinImageFile.end()
+                }
             }
 
             CheckButton {
@@ -183,6 +208,7 @@ ApplicationWindow {
                 }
               }
 
+
             Label {
                 text: " Pixel Scale "
                 width: Text.implicitWidth
@@ -254,7 +280,7 @@ ApplicationWindow {
         onAccepted: {
             console.log("You chose: " + fileDialog.fileUrls)
             aBinImageFile.openIFileName(fileDialog.fileUrls)
-            timer.start
+            timer.start()
 
         }
         onRejected: {

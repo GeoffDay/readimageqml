@@ -48,6 +48,7 @@ public:
     Q_INVOKABLE bool begin();
     Q_INVOKABLE bool back();
     Q_INVOKABLE bool play();
+    Q_INVOKABLE bool pause();
     Q_INVOKABLE bool loop(bool);
     Q_INVOKABLE bool forward();
     Q_INVOKABLE bool end();
@@ -66,20 +67,21 @@ signals:
 //    void newImageLimits(QPoint(int, int));
     void changePlay(bool);
     void agcState(bool);
+    void nFrames(int);
 
 
 private:
     QFile file, exportFile;
-    QString dirStr, pixStr;
+    QString dirStr, pixStr, imageType;
     QString iFileName, iExt, exportFileName;
     QStringList iFileList;
-    quint32 filePos, beginPos, endPos, redraw;
+    quint32 spadVersion, fileVersion, filePos, beginPos, endPos, redraw;
     quint32 ctMin, ctMax;               //colour table min and max
 
     QImage image;
     double pixelScale;
     quint32 iWidth, iHeight, imageMin, imageMax,totalPixels, xPos, yPos;
-    quint32  currentFrame, startFrame, endFrame, magnification;
+    quint32 numberOfFrames, currentFrame, startFrame, endFrame, magnification;
     bool flipX, flipY, loopMode, playMode, colourTableType, AGC;
     QString m_name;
 

@@ -15,7 +15,6 @@
 #include <QDataStream>
 #include <QImageWriter>
 
-
 #include "readimage.h"
 
 #define IRANGE 4095
@@ -25,8 +24,8 @@ ReadImage::ReadImage(QQuickItem *parent)
 {
        dirStr = QDir::currentPath();
 
-       iWidth = 100;
-       iHeight = 100;
+       iWidth = 32;
+       iHeight = 32;
        imageMin = 0;
        imageMax = 4095;
 
@@ -181,7 +180,7 @@ bool ReadImage::openIFileName(QString tFileName)
 
     file.open(QIODevice::ReadOnly);         //Open the file for reading
 
-//    getHeaderData();
+    getBinHeaderData();
     return true;
 }
 
@@ -201,17 +200,65 @@ QStringList ReadImage::listIFiles(QFileInfo aFInfo)
 
 void ReadImage::getBinHeaderData()
 {
-
+    // Check that the file size is greater than 0.
+    // each frame has a line of header data. Image size will be constant.
+    // get the image size details and calculate the number of frames
+    // the header data is 64 bytes long regardless of actual resolution due 1st SPADs 32 x 32.
     qDebug() << "hello from getBinHeaderData";
 
-//    emit arfSize(QPoint(iWidth, iHeight));
+    if (file.size() == 0){
+     //   QMessageBox::warning(this, tr("Qt Arf/Bin player"),tr("File %1:\n contains has zero file size.").arg(iFileName));
+        return;
+    }
 
+    QByteArray baHeader(64, 0);
+    baHeader = file.read(64);      // read the header to a bytearray
+    iWidth = baHeader.mid(4,2).toInt();
+    iHeight = baHeader.mid(6,2).toInt();
+    spadVersion = baHeader.mid(8,2).toInt();
+    fileVersion = baHeader.mid(10,2).toInt();
 
+//    numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
+    numberOfFrames = 10;
 
+    if (iWidth == 32) {
+        imageType = "Gen 1 SPADs   ";
+        magnification = 20;
+     }
+
+    if (iWidth == 128) {
+        imageType = "Gen 2 SPADs   ";
+        magnification = 5;
+     }
+
+    emit nFrames(numberOfFrames);           //set our number of frames to the widget
+
+    filePos = file.pos();                   // get our current file position
+
+//    resize(QSize((iWidth * magnification), (iHeight * magnification)));
+
+    setAGCOn();
+    redraw = 1;
+
+    imageMin = 0;
+    imageMax = quint16(4095 * pixelScale);
+
+    startFrame = 1;                     //setup arfpos.qml values
+    endFrame = numberOfFrames;
+    currentFrame = 1;
+    redraw = 1;                         // 1 redraws current frame
+
+    playMode = true;
+    emit changePlay(playMode);
+    return;
 }
+
+
 
 int ReadImage::getBinImage(int rdrw, int frame)
 {
+    qDebug() << "hello from getbinimage";
+
     // image min and max are stored in the 64 byte frame header
     QByteArray baImage(iWidth * iHeight * 2, 0);
     QByteArray baImageR(iWidth * iHeight * 2, 0);   // this is a result array. we can write this to a file easily
@@ -339,6 +386,39 @@ void ReadImage::paint(QPainter *painter)
     painter->setPen(pen);
     painter->setRenderHints(QPainter::Antialiasing, true);
     painter->drawPie(boundingRect().adjusted(1, 1, -1, -1), 90 * 16, 290 * 16);
+
+
+    //qDebug() << "in paintevent";
+
+//    QRect dirtyRect = event->rect();
+//    painter.drawImage(dirtyRect, image, dirtyRect);
+
+//    QFont font("Arial", 12);\
+//    painter.setFont(font);
+//    QFontMetrics fm(font);
+//    quint32 pixelsWide = fm.width(pixStr);
+
+//    quint32 pixelsHigh = fm.height();
+//    quint32 xOff, yOff;
+
+//    if (xPos * Magnification > (iWidth * Magnification) - pixelsWide - 20) {
+//        xOff = xPos * Magnification - pixelsWide - 20;
+//    } else {
+//        xOff = (xPos * Magnification) + 20;
+//    }
+
+//    if (yPos * Magnification < pixelsHigh) {
+//        yOff = yPos * Magnification + pixelsHigh ;
+//    } else {
+//        yOff = yPos * Magnification - 20;
+//    }
+
+//    // qDebug() << "fm" << pixelsWide << "iWidth" << iWidth << "xPos * mag" << xPos * Magnification;
+
+//    painter.fillRect(xOff,yOff,pixelsWide,pixelsHigh, "white");
+//    painter.setPen("black");
+//    painter.scale(1.0,1.0);
+//    painter.drawText(xOff, yOff + pixelsHigh/1.2, pixStr);
 }
 
 
@@ -469,17 +549,22 @@ bool ReadImage::back()
 
 bool ReadImage::play()
 {
-    if (playMode){
-        playMode = false;
-    } else {
-        playMode = true;
-    }
+    playMode = true;
 
     redraw = 1;
     emit changePlay(playMode);
     return 1;
 }
 
+
+bool ReadImage::pause()
+{
+    playMode = false;
+
+    redraw = 1;
+    emit changePlay(playMode);
+    return 1;
+}
 
 
 bool ReadImage::loop(bool pLoop)
