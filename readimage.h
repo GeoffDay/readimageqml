@@ -18,9 +18,9 @@
 class ReadImage : public QQuickPaintedItem
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(int numberOfFrames READ nFrames NOTIFY nFramesChanged)
     Q_PROPERTY(quint32 magnification READ Magnification WRITE setMagnification)
-    Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
+//    Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
 
 public:
     ReadImage(QQuickItem *parent = 0);
@@ -44,6 +44,10 @@ public:
     void setAGCOn();
     void setAGCOff();
     void pixScl(QString tString);
+    Q_INVOKABLE void setCurrentFrame(int tCFrame);
+    Q_INVOKABLE void setStartFrame(int tSFrame);
+    Q_INVOKABLE void setEndFrame(int tEFrame);
+    Q_INVOKABLE int nFrames();
 
     Q_INVOKABLE bool begin();
     Q_INVOKABLE bool back();
@@ -68,6 +72,7 @@ signals:
     void changePlay(bool);
     void agcState(bool);
     void nFrames(int);
+    void nFramesChanged(int);
 
 
 private:

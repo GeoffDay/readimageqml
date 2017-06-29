@@ -10,6 +10,7 @@ SOURCES += main.cpp \
 RESOURCES += qml.qrc
 
 DISTFILES += MyButton.qml \
+    MyMain.qml \
     playback_begin.png \
     playback_end.png \
     rewind.svg \

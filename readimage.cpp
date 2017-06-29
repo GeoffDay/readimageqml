@@ -27,13 +27,16 @@ ReadImage::ReadImage(QQuickItem *parent)
        iWidth = 32;
        iHeight = 32;
        imageMin = 0;
-       imageMax = 4095;
-
+       imageMax = 256;
        magnification = 1;
        pixelScale = 1.0;
        flipX = false;
        flipY = false;
+
+       startFrame = 17;
        currentFrame = 1;
+       endFrame = 123;
+
        loopMode = true;
        playMode = false;
 //       exportARFFlag = false;
@@ -42,9 +45,9 @@ ReadImage::ReadImage(QQuickItem *parent)
        colourTableType = true;
        genLCIIColourTable(0, 65535);
 
-       QImage image(iWidth * magnification, iHeight * magnification, QImage::Format_RGB32);
+
        qApp->processEvents(QEventLoop::AllEvents);     // THIS KEEPS UI RESPONSIVE!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       image.fill(0xFF0606f0);
+
        QString pixStr = "";
 
 //       setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
@@ -213,28 +216,43 @@ void ReadImage::getBinHeaderData()
 
     QByteArray baHeader(64, 0);
     baHeader = file.read(64);      // read the header to a bytearray
-    iWidth = baHeader.mid(4,2).toInt();
-    iHeight = baHeader.mid(6,2).toInt();
-    spadVersion = baHeader.mid(8,2).toInt();
-    fileVersion = baHeader.mid(10,2).toInt();
+    quint16 *headerPtr = reinterpret_cast<quint16 *>(baHeader.data());   // create a pointer to that bytearray and
 
-//    numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
-    numberOfFrames = 10;
-
-    if (iWidth == 32) {
-        imageType = "Gen 1 SPADs   ";
+    if (*headerPtr == 0x55AA) { // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
+        imageType = "Princeton SPAD";
+        iWidth = 32;
+        iHeight = 32;
         magnification = 20;
-     }
+    } else {
+        fileVersion = quint32(*headerPtr + 2);
+        spadVersion = quint32(*headerPtr + 9);
+        iWidth = quint32(*(headerPtr + 18));
+        iHeight = quint32(*(headerPtr + 19));
 
-    if (iWidth == 128) {
-        imageType = "Gen 2 SPADs   ";
-        magnification = 5;
-     }
+        numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
 
+        if (iWidth == 32) {
+            imageType = "Gen 1 SPADs   ";
+            magnification = 20;
+         }
+
+        if (iWidth == 128) {
+            imageType = "Gen 2 SPADs   ";
+            magnification = 5;
+         }
+    }
+
+    QImage image(iWidth * magnification, iHeight * magnification, QImage::Format_RGB32);
+    image.fill(0xFF0606f0);
+
+    qDebug() << "nframes" << numberOfFrames;
     emit nFrames(numberOfFrames);           //set our number of frames to the widget
+    emit nFramesChanged(numberOfFrames);
+
+    totalPixels = iWidth * iHeight;
 
     filePos = file.pos();                   // get our current file position
-
+    beginPos = filePos;
 //    resize(QSize((iWidth * magnification), (iHeight * magnification)));
 
     setAGCOn();
@@ -257,7 +275,6 @@ void ReadImage::getBinHeaderData()
 
 int ReadImage::getBinImage(int rdrw, int frame)
 {
-    qDebug() << "hello from getbinimage";
 
     // image min and max are stored in the 64 byte frame header
     QByteArray baImage(iWidth * iHeight * 2, 0);
@@ -282,11 +299,11 @@ int ReadImage::getBinImage(int rdrw, int frame)
 
 
         for (quint32 i = 0; i < totalPixels; i++, imagePtr++, thsFrmePtr++){  //iterate image pointer through memory
-            colour = byteSwapTable.at(*imagePtr);
-//            colour = *imagePtr;
-            *thsFrmePtr = colourTable.at(colour);
+        //    colour = byteSwapTable.at(*imagePtr);
+            colour = *imagePtr;
+            *thsFrmePtr = colourTable.at(i);
             tColour = colour;
-
+//            *thsFrmePtr = *imagePtr;
             histValue = histogram[tColour];
             histogram[tColour] = histValue + 1; //since we're trawling through the image do the histogram
 
@@ -294,7 +311,11 @@ int ReadImage::getBinImage(int rdrw, int frame)
                 double sColour = tColour * pixelScale;
                 pixStr = QString(" %1, %2, %3 ").arg(xPos,0,10,QChar(' ')).arg(yPos,0,10,QChar(' ')).arg(sColour, 0, 'f', 1, QChar(' '));
             }
+//            thisFrame.setPixel(int(i/iWidth), int(i % iWidth), 0xFF930000 + i);
+//                      thisFrame.setPixel(int(i/iWidth), int(i % iWidth), 0xFF000000 + i * 10);
         }
+
+        qDebug() << "hello from getbinimage" << magnification << iWidth;
 
         image = thisFrame.scaledToWidth(iWidth * magnification).mirrored(flipX, flipY);
 
@@ -316,7 +337,7 @@ int ReadImage::getBinImage(int rdrw, int frame)
 //            out.writeRawData(baImageR, (totalPixels) * 2);
 //        }
 
-//        repaint();
+// repaint();
 
         emit newHistogram(histogram);
     }
@@ -387,12 +408,12 @@ void ReadImage::paint(QPainter *painter)
     painter->setRenderHints(QPainter::Antialiasing, true);
     painter->drawPie(boundingRect().adjusted(1, 1, -1, -1), 90 * 16, 290 * 16);
 
+//QPainter *painter;
 
-    //qDebug() << "in paintevent";
+    QRect dirtyRect = QRect(0,0,iWidth * magnification,(iHeight + 1) * magnification);
+    painter->drawImage(dirtyRect, image);
 
-//    QRect dirtyRect = event->rect();
-//    painter.drawImage(dirtyRect, image, dirtyRect);
-
+    qDebug() << "in paintevent";
 //    QFont font("Arial", 12);\
 //    painter.setFont(font);
 //    QFontMetrics fm(font);
@@ -469,6 +490,28 @@ void ReadImage::pixScl(QString tString)
     if (!ok) {
         pixelScale = 1.0;
     }
+}
+
+void ReadImage::setCurrentFrame(int tCFrame)
+{
+    currentFrame = tCFrame;
+}
+
+void ReadImage::setStartFrame(int tSFrame)
+{
+    qDebug() << "hello from set start frame" << startFrame;
+    startFrame = tSFrame;
+}
+
+void ReadImage::setEndFrame(int tEFrame)
+{
+    qDebug() << "hello from set end frame" << endFrame;
+    endFrame = tEFrame;
+}
+
+int ReadImage::nFrames()
+{
+    return numberOfFrames;
 }
 
 
