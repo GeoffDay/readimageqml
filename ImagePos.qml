@@ -16,6 +16,8 @@ Item {
 
     property double iScale: (imagePos.width - (2 * currentPointer.width)) / (nFrames - 1)
 
+
+
     Rectangle {
         id: filePosBackGround
         y: 0
@@ -90,7 +92,8 @@ Item {
             drag.minimumX: 0; drag.maximumX: imagePos.width - currentPointer.width
         }
 
-        onXChanged: imagePosObject.getCurrentFrame(1 + Math.round((currentPointer.x - currentPointer.width / 2)/ (imagePos.width - (2 * currentPointer.width)) * (nFrames - 1)))
+//        onXChanged: imagePosObject.getCurrentFrame(1 + Math.round((currentPointer.x - currentPointer.width / 2)/ (imagePos.width - (2 * currentPointer.width)) * (nFrames - 1)))
+        onXChanged: aBinImageFile.setCurrentFrame(1 + Math.round((currentPointer.x - currentPointer.width / 2)/ (imagePos.width - (2 * currentPointer.width)) * (nFrames - 1)))
 
     }
 
@@ -123,7 +126,7 @@ Item {
             drag.minimumX: 0; drag.maximumX: endPointer.x - endPointer.width
         }
 
-//        onXChanged: imagePosObject.getStartFrame(1 + Math.round(startPointer.x / iScale))
+        onXChanged: aBinImageFile.setStartFrame(1 + Math.round(startPointer.x / iScale))
     }
 
 
@@ -156,9 +159,7 @@ Item {
             drag.minimumX: startPointer.x + startPointer.width; drag.maximumX: imagePos.width - endPointer.width
         }
 
-//        onXChanged: {imagePosObject.getEndFrame(1 + Math.round((endPointer.x - startPointer.width) / iScale))
-//            console.log("end value ", endFrame)
-//        }
+        onXChanged: aBinImageFile.setEndFrame(1 + Math.round((endPointer.x - startPointer.width) / iScale))
     }
 
 }

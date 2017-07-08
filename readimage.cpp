@@ -15,6 +15,7 @@
 #include <QDataStream>
 #include <QImageWriter>
 
+
 #include "readimage.h"
 
 #define IRANGE 4095
@@ -28,7 +29,7 @@ ReadImage::ReadImage(QQuickItem *parent)
        iHeight = 32;
        imageMin = 0;
        imageMax = 256;
-       magnification = 1;
+       magnification = 11;
        pixelScale = 1.0;
        flipX = false;
        flipY = false;
@@ -36,7 +37,8 @@ ReadImage::ReadImage(QQuickItem *parent)
        startFrame = 17;
        currentFrame = 1;
        endFrame = 123;
-
+       numberOfFrames = 125;
+       outlierThreshold = 5;
        loopMode = true;
        playMode = false;
 //       exportARFFlag = false;
@@ -49,12 +51,6 @@ ReadImage::ReadImage(QQuickItem *parent)
        qApp->processEvents(QEventLoop::AllEvents);     // THIS KEEPS UI RESPONSIVE!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
        QString pixStr = "";
-
-//       setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
-//       activateWindow();
-//       show();
-
-
 }
 
 
@@ -183,6 +179,11 @@ bool ReadImage::openIFileName(QString tFileName)
 
     file.open(QIODevice::ReadOnly);         //Open the file for reading
 
+    if (file.size() == 0){
+       qDebug() << "File %1:\n contains has zero file size.";
+        return false;
+    }
+
     getBinHeaderData();
     return true;
 }
@@ -207,16 +208,16 @@ void ReadImage::getBinHeaderData()
     // each frame has a line of header data. Image size will be constant.
     // get the image size details and calculate the number of frames
     // the header data is 64 bytes long regardless of actual resolution due 1st SPADs 32 x 32.
-    qDebug() << "hello from getBinHeaderData";
 
-    if (file.size() == 0){
-     //   QMessageBox::warning(this, tr("Qt Arf/Bin player"),tr("File %1:\n contains has zero file size.").arg(iFileName));
-        return;
-    }
+    qDebug() << "asejfosduigfpuiosergpuioaepigoasygseuilaytgeuioawyhgaweuioytgwui4oayhtgoqw3yui4hello from getBinHeaderData";
+
+
+
 
     QByteArray baHeader(64, 0);
     baHeader = file.read(64);      // read the header to a bytearray
     quint16 *headerPtr = reinterpret_cast<quint16 *>(baHeader.data());   // create a pointer to that bytearray and
+    qDebug() << "hello from getBinHeaderData" << *headerPtr;
 
     if (*headerPtr == 0x55AA) { // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
         imageType = "Princeton SPAD";
@@ -224,13 +225,13 @@ void ReadImage::getBinHeaderData()
         iHeight = 32;
         magnification = 20;
     } else {
-        fileVersion = quint32(*headerPtr + 2);
+        fileVersion = quint32(*headerPtr + 18);
         spadVersion = quint32(*headerPtr + 9);
         iWidth = quint32(*(headerPtr + 18));
         iHeight = quint32(*(headerPtr + 19));
 
         numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
-
+        numberOfFrames = 23;
         if (iWidth == 32) {
             imageType = "Gen 1 SPADs   ";
             magnification = 20;
@@ -246,7 +247,8 @@ void ReadImage::getBinHeaderData()
     image.fill(0xFF0606f0);
 
     qDebug() << "nframes" << numberOfFrames;
-    emit nFrames(numberOfFrames);           //set our number of frames to the widget
+
+//    emit nFrames(numberOfFrames);           //set our number of frames to the widget
     emit nFramesChanged(numberOfFrames);
 
     totalPixels = iWidth * iHeight;
@@ -262,8 +264,14 @@ void ReadImage::getBinHeaderData()
     imageMax = quint16(4095 * pixelScale);
 
     startFrame = 1;                     //setup arfpos.qml values
+    emit startFrameChanged(startFrame);
+
     endFrame = numberOfFrames;
+    emit endFrameChanged(endFrame);
+
     currentFrame = 1;
+    emit currentFrameChanged(currentFrame);
+
     redraw = 1;                         // 1 redraws current frame
 
     playMode = true;
@@ -275,22 +283,24 @@ void ReadImage::getBinHeaderData()
 
 int ReadImage::getBinImage(int rdrw, int frame)
 {
-
     // image min and max are stored in the 64 byte frame header
     QByteArray baImage(iWidth * iHeight * 2, 0);
     QByteArray baImageR(iWidth * iHeight * 2, 0);   // this is a result array. we can write this to a file easily
+    QByteArray baHeader(iWidth * 2, 0);
+
     QImage thisFrame(iWidth, iHeight, QImage::Format_RGB32);
 
-    quint16 colour, tColour;
+    quint16 colour, tColour, thisImageMin, thisImageMax;
 
     if ((rdrw > 0) && file.isOpen()) {
         rdrw--;
-        emit currFrame((int)(frame));     // shows us where we are in the file
+        emit currentFrameChanged((quint32)(frame));     // shows us where we are in the file
         quint32 pixelPos = (xPos + (yPos * iWidth));    //calculate memory location of the pixel
         quint16 histValue;
 
-        quint32 seekPos = (((iWidth * iHeight)) * 2 * (frame - 1)) + beginPos;
+        quint32 seekPos = (((iWidth * iHeight) + iWidth) * 2 * (frame - 1));
         file.seek(seekPos);
+        baHeader = file.read(iWidth * 2);
         baImage = file.read(iWidth * iHeight * 2);      // read 1 frame to a bytearray
         baImageR = baImage;
         quint16 *imagePtr = reinterpret_cast<quint16 *>(baImage.data());   // create a pointer to that bytearray and
@@ -301,7 +311,7 @@ int ReadImage::getBinImage(int rdrw, int frame)
         for (quint32 i = 0; i < totalPixels; i++, imagePtr++, thsFrmePtr++){  //iterate image pointer through memory
         //    colour = byteSwapTable.at(*imagePtr);
             colour = *imagePtr;
-            *thsFrmePtr = colourTable.at(i);
+            *thsFrmePtr = colourTable.at(colour);
             tColour = colour;
 //            *thsFrmePtr = *imagePtr;
             histValue = histogram[tColour];
@@ -311,8 +321,6 @@ int ReadImage::getBinImage(int rdrw, int frame)
                 double sColour = tColour * pixelScale;
                 pixStr = QString(" %1, %2, %3 ").arg(xPos,0,10,QChar(' ')).arg(yPos,0,10,QChar(' ')).arg(sColour, 0, 'f', 1, QChar(' '));
             }
-//            thisFrame.setPixel(int(i/iWidth), int(i % iWidth), 0xFF930000 + i);
-//                      thisFrame.setPixel(int(i/iWidth), int(i % iWidth), 0xFF000000 + i * 10);
         }
 
         qDebug() << "hello from getbinimage" << magnification << iWidth;
@@ -337,7 +345,32 @@ int ReadImage::getBinImage(int rdrw, int frame)
 //            out.writeRawData(baImageR, (totalPixels) * 2);
 //        }
 
-// repaint();
+
+        update();
+        histValue = 0;
+
+        for (quint16 i = 0; i < 4096; i++){
+            histValue += histogram[i];
+            if (histValue > outlierThreshold){
+                thisImageMin = i;
+                break;
+            }
+        }
+
+        histValue = 0;
+
+        for (quint16 i = 4096; i > 0; i--){
+            histValue += histogram[i];
+            if (histValue > outlierThreshold){
+                thisImageMax = i;
+                break;
+            }
+        }
+
+        imageMin = (quint16)(((imageMin * 3) + ((97) * thisImageMin)) / 100);
+        imageMax = (quint16)(((imageMax * 3) + ((97) * thisImageMax)) / 100);
+
+        if (AGC){recalcColourTable(imageMin, imageMax);}
 
         emit newHistogram(histogram);
     }
@@ -408,38 +441,10 @@ void ReadImage::paint(QPainter *painter)
     painter->setRenderHints(QPainter::Antialiasing, true);
     painter->drawPie(boundingRect().adjusted(1, 1, -1, -1), 90 * 16, 290 * 16);
 
-//QPainter *painter;
-
     QRect dirtyRect = QRect(0,0,iWidth * magnification,(iHeight + 1) * magnification);
     painter->drawImage(dirtyRect, image);
 
-    qDebug() << "in paintevent";
-//    QFont font("Arial", 12);\
-//    painter.setFont(font);
-//    QFontMetrics fm(font);
-//    quint32 pixelsWide = fm.width(pixStr);
-
-//    quint32 pixelsHigh = fm.height();
-//    quint32 xOff, yOff;
-
-//    if (xPos * Magnification > (iWidth * Magnification) - pixelsWide - 20) {
-//        xOff = xPos * Magnification - pixelsWide - 20;
-//    } else {
-//        xOff = (xPos * Magnification) + 20;
-//    }
-
-//    if (yPos * Magnification < pixelsHigh) {
-//        yOff = yPos * Magnification + pixelsHigh ;
-//    } else {
-//        yOff = yPos * Magnification - 20;
-//    }
-
-//    // qDebug() << "fm" << pixelsWide << "iWidth" << iWidth << "xPos * mag" << xPos * Magnification;
-
-//    painter.fillRect(xOff,yOff,pixelsWide,pixelsHigh, "white");
-//    painter.setPen("black");
-//    painter.scale(1.0,1.0);
-//    painter.drawText(xOff, yOff + pixelsHigh/1.2, pixStr);
+    qDebug() << "in paintevent" << iWidth << iHeight << magnification;
 }
 
 
@@ -492,9 +497,32 @@ void ReadImage::pixScl(QString tString)
     }
 }
 
+
+quint32 ReadImage::nFrames()
+{
+    return numberOfFrames;
+}
+
+quint32 ReadImage::sFrame()
+{
+    return startFrame;
+}
+
+quint32 ReadImage::eFrame()
+{
+    return endFrame;
+}
+
+quint32 ReadImage::cFrame()
+{
+    qDebug() << currentFrame << "fuckKKK in currframe";
+    return currentFrame;
+}
+
 void ReadImage::setCurrentFrame(int tCFrame)
 {
     currentFrame = tCFrame;
+    qDebug() << "hello from set current frame" << currentFrame;
 }
 
 void ReadImage::setStartFrame(int tSFrame)
@@ -507,11 +535,6 @@ void ReadImage::setEndFrame(int tEFrame)
 {
     qDebug() << "hello from set end frame" << endFrame;
     endFrame = tEFrame;
-}
-
-int ReadImage::nFrames()
-{
-    return numberOfFrames;
 }
 
 
@@ -565,17 +588,17 @@ void ReadImage::setAGCOff()
 
 
 
-bool ReadImage::begin()
+void ReadImage::begin()
 {
     playMode = false;           // paused
     currentFrame = startFrame;  // first frame
     redraw = 1;                 // paused
-    return 1;
+    timerTimeout();
 }
 
 
 
-bool ReadImage::back()
+void ReadImage::back()
 {
     if(currentFrame > startFrame) {
         currentFrame -= 1;
@@ -585,41 +608,41 @@ bool ReadImage::back()
 
     playMode = false;
     redraw = 1;
-    return 1;
+    timerTimeout();
 }
 
 
 
-bool ReadImage::play()
+void ReadImage::play()
 {
     playMode = true;
 
     redraw = 1;
     emit changePlay(playMode);
-    return 1;
+    timerTimeout();
 }
 
 
-bool ReadImage::pause()
+void ReadImage::pause()
 {
     playMode = false;
 
     redraw = 1;
     emit changePlay(playMode);
-    return 1;
+    timerTimeout();
 }
 
 
-bool ReadImage::loop(bool pLoop)
+void ReadImage::loop(bool pLoop)
 {
     loopMode = pLoop;
     qDebug() << "loop" << loopMode;
-    return 1;
+    timerTimeout();
 }
 
 
 
-bool ReadImage::forward()
+void ReadImage::forward()
 {
     if(currentFrame < endFrame) {
         ++currentFrame;
@@ -629,15 +652,15 @@ bool ReadImage::forward()
 
     playMode = false;
     redraw = 1;
-    return 1;
+    timerTimeout();
 }
 
 
 
-bool ReadImage::end()
+void ReadImage::end()
 {
     currentFrame = endFrame;   // end frame
     playMode = false;          // paused
     redraw = 1;                // paused
-    return 1;
+    timerTimeout();
 }

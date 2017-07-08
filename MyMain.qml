@@ -19,28 +19,44 @@ ApplicationWindow {
 
     title: qsTr("Player")
 
-
         ReadImage {
             id: aBinImageFile
-            anchors.centerIn: parent
+//            anchors.centerIn: parent
+            x: 2
+            y: 2
             width: 1000; height: 1000
-//            name: "bif"
-//            onChartCleared: console.log("The chart has been cleared")
+
+            onStartFrameChanged: {
+                console.log("updates S " + startFrame)
+                iPos.startFrame = startFrame
+            }
+            onEndFrameChanged: {
+                console.log("updates E " + endFrame)
+                iPos.endFrame = endFrame
+            }
+            onCurrentFrameChanged: {
+                console.log("updates C " + currentFrame)
+                iPos.currentFrame = currentFrame
+            }
+            onNFramesChanged: {
+                console.log("updates N " + nFrames)
+                iPos.nFrames = nFrames
+            }
         }
 
         ImagePos {
             id: iPos
-            width: Screen.width - 600
-            height: 50
-            currentFrame: 34
-            nFrames: 109
-            startFrame: 1
-            endFrame: 109
+            width: mainWindow.width - 4
+            height: 60
+            y: mainWindow.height - 96
+            x: 2
         }
 
         Row {
             spacing: 2
-            y: 300
+            x: 2
+            y: mainWindow.height - 34
+
             MyButton {
                 annunc: "Prev File"
                 frColor: "#000000"

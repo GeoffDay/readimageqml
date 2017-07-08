@@ -18,9 +18,13 @@
 class ReadImage : public QQuickPaintedItem
 {
     Q_OBJECT
-    Q_PROPERTY(int numberOfFrames READ nFrames NOTIFY nFramesChanged)
+    Q_PROPERTY(quint32 nFrames READ nFrames NOTIFY nFramesChanged)
+    Q_PROPERTY(quint32 startFrame READ sFrame WRITE setStartFrame NOTIFY startFrameChanged)
+    Q_PROPERTY(quint32 endFrame READ eFrame WRITE setEndFrame NOTIFY endFrameChanged)
+    Q_PROPERTY(quint32 currentFrame READ cFrame WRITE setCurrentFrame NOTIFY currentFrameChanged)
+
     Q_PROPERTY(quint32 magnification READ Magnification WRITE setMagnification)
-//    Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
+    Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
 
 public:
     ReadImage(QQuickItem *parent = 0);
@@ -44,18 +48,22 @@ public:
     void setAGCOn();
     void setAGCOff();
     void pixScl(QString tString);
+
     Q_INVOKABLE void setCurrentFrame(int tCFrame);
     Q_INVOKABLE void setStartFrame(int tSFrame);
     Q_INVOKABLE void setEndFrame(int tEFrame);
-    Q_INVOKABLE int nFrames();
+    Q_INVOKABLE quint32 nFrames();
+    Q_INVOKABLE quint32 sFrame();
+    Q_INVOKABLE quint32 eFrame();
+    Q_INVOKABLE quint32 cFrame();
 
-    Q_INVOKABLE bool begin();
-    Q_INVOKABLE bool back();
-    Q_INVOKABLE bool play();
-    Q_INVOKABLE bool pause();
-    Q_INVOKABLE bool loop(bool);
-    Q_INVOKABLE bool forward();
-    Q_INVOKABLE bool end();
+    Q_INVOKABLE void begin();
+    Q_INVOKABLE void back();
+    Q_INVOKABLE void play();
+    Q_INVOKABLE void pause();
+    Q_INVOKABLE void loop(bool);
+    Q_INVOKABLE void forward();
+    Q_INVOKABLE void end();
 
 private slots:
 //    void genByteSwapTable();
@@ -65,14 +73,16 @@ private slots:
 
 
 signals:
-    void currFrame(int);
+    void currentFrameChanged(quint32 currFrame);
+    void startFrameChanged(quint32 startFrame);
+    void endFrameChanged(quint32 endFrame);
+    void nFramesChanged(quint32 numberOfFrames);
     void newHistogram(QVector<quint32>);
     void newColourTable(QVector<QRgb>);
 //    void newImageLimits(QPoint(int, int));
     void changePlay(bool);
     void agcState(bool);
-    void nFrames(int);
-    void nFramesChanged(int);
+//    void nFrames(quint32);
 
 
 private:
@@ -81,7 +91,7 @@ private:
     QString iFileName, iExt, exportFileName;
     QStringList iFileList;
     quint32 spadVersion, fileVersion, filePos, beginPos, endPos, redraw;
-    quint32 ctMin, ctMax;               //colour table min and max
+    quint32 outlierThreshold, ctMin, ctMax;               //colour table min and max
 
     QImage image;
     double pixelScale;
