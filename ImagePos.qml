@@ -29,8 +29,8 @@ Item {
         MouseArea {
             id: setStartArea
             x: 0
-            width: (currentFrame - 1) * iScale + currentPointer.width / 2
             y: 0
+            width: (currentFrame - 1) * iScale + currentPointer.width / 2
             height: parent.height
             acceptedButtons: Qt.LeftButton
             hoverEnabled: true
@@ -41,8 +41,8 @@ Item {
         MouseArea {
             id: setEndArea
             x: currentPointer.x
-            width: parent.width - currentPointer.x - 2 * currentPointer.width
             y: 0
+            width: parent.width - currentPointer.x - 2 * currentPointer.width
             height: parent.height
             acceptedButtons: Qt.LeftButton
             hoverEnabled: true

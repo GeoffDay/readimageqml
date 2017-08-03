@@ -17,30 +17,54 @@ ApplicationWindow {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
     }
 
+    
+
     title: qsTr("Player")
 
-        ReadImage {
-            id: aBinImageFile
-//            anchors.centerIn: parent
-            x: 2
-            y: 2
-            width: 1000; height: 1000
+        Row {
+            spacing: 5
 
-            onStartFrameChanged: {
-                console.log("updates S " + startFrame)
-                iPos.startFrame = startFrame
+            ReadImage {
+                id: aBinImageFile
+    //            anchors.centerIn: parent
+                x: 2
+                y: 2
+                width: 1000; height: 1000
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    onClicked: {
+                        mouseArea.pressedButtons & Qt.LeftButton ? aBinImageFile.pause() : console.log("right butrsdgedsytg3wqeyew5ytew5tosafgsagwsgvwahrbn pressed")
+
+                    }
+                }
+
+                onStartFrameChanged: {
+                    console.log("updates S " + startFrame)
+                    iPos.startFrame = startFrame
+                }
+                onEndFrameChanged: {
+                    console.log("updates E " + endFrame)
+                    iPos.endFrame = endFrame
+                }
+                onCurrentFrameChanged: {
+                    console.log("updates C " + currentFrame)
+                    iPos.currentFrame = currentFrame
+                }
+                onNFramesChanged: {
+                    console.log("updates N " + nFrames)
+                    iPos.nFrames = nFrames
+                }
             }
-            onEndFrameChanged: {
-                console.log("updates E " + endFrame)
-                iPos.endFrame = endFrame
-            }
-            onCurrentFrameChanged: {
-                console.log("updates C " + currentFrame)
-                iPos.currentFrame = currentFrame
-            }
-            onNFramesChanged: {
-                console.log("updates N " + nFrames)
-                iPos.nFrames = nFrames
+
+            Palette {
+                id: palette
+                width: 50
+                height: mainWindow.height - 100
+                y: 0
+                x: mainWindow.width - palette.width
             }
         }
 
@@ -312,5 +336,5 @@ ApplicationWindow {
         Component.onCompleted: visible = false
     }
 
-
+    
 }

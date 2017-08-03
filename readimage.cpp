@@ -209,7 +209,7 @@ void ReadImage::getBinHeaderData()
     // get the image size details and calculate the number of frames
     // the header data is 64 bytes long regardless of actual resolution due 1st SPADs 32 x 32.
 
-    qDebug() << "asejfosduigfpuiosergpuioaepigoasygseuilaytgeuioawyhgaweuioytgwui4oayhtgoqw3yui4hello from getBinHeaderData";
+    qDebug() << "hello from getBinHeaderData";
 
 
 
@@ -664,3 +664,4 @@ void ReadImage::end()
     redraw = 1;                // paused
     timerTimeout();
 }
+

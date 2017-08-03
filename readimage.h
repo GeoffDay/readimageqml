@@ -71,7 +71,6 @@ private slots:
     void genLCIIColourTable(quint16, quint16);
     void recalcColourTable(quint16, quint16);
 
-
 signals:
     void currentFrameChanged(quint32 currFrame);
     void startFrameChanged(quint32 startFrame);
