@@ -35,11 +35,52 @@ ApplicationWindow {
                     id: mouseArea
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
-                    onClicked: {
-                        mouseArea.pressedButtons & Qt.LeftButton ? aBinImageFile.pause() : console.log("right butrsdgedsytg3wqeyew5ytew5tosafgsagwsgvwahrbn pressed")
 
+                    onClicked: {
+                        if (mouse.button == Qt.RightButton)
+//                           console.log("pressed Right Button")
+                           aBinImageFile.play()
+                        else
+//                          console.log("pressed Left Button")
+                        aBinImageFile.pause()
+                    }
+
+                    onWheel: {
+                        if (wheel.angleDelta.y > 0)
+                            aBinImageFile.forward()
+                        else if (wheel.angleDelta.y < 0)
+                            aBinImageFile.back()
                     }
                 }
+
+
+
+//                void ReadArf::wheelEvent(QWheelEvent *event)
+//                {
+//                    int numDegrees = event->delta() / 8;
+//                    int numSteps = numDegrees / 15;
+
+//                    if (event->buttons() == Qt::RightButton) {      //hold down right mouse button to change size
+
+//                        if((numSteps > 0) && (Magnification < 32)) {Magnification++;}
+//                        if((numSteps < 0) && (Magnification > 1)) {Magnification--;}
+
+//                        imageType = (arfDirStr  + "/" + arfFileName + " x" + QString::number(Magnification, 10));
+//                        emit wTitle(imageType);
+//                        resizeImage(&image, QSize(iWidth * Magnification, iHeight * Magnification));
+//                    } else {                                        //otherwise stop playing and allow mousewheel to control frames
+//                        playMode = false;
+//                        emit changePlay(playMode);
+
+//                        if (numSteps > 0) {++currentFrame;}
+//                        if (numSteps < 0) {--currentFrame;}
+//                    }
+
+//                    redraw = 1;
+//                    update();
+//                }
+
+
 
                 onStartFrameChanged: {
                     console.log("updates S " + startFrame)
