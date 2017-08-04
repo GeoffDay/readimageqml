@@ -164,7 +164,22 @@ void ReadImage::genLCIIColourTable(quint16 min, quint16 max)
 }
 
 
+
+QStringList ReadImage::listIFiles(QFileInfo aFInfo)
+{
+    QDir aDir(aFInfo.absoluteDir());                                        //create a QDir path
+
+    QStringList filter(QString("*.%1").arg(aFInfo.suffix()));               //filter on arfs or bins depending on what I selected in qml
+    QStringList aFList = aDir.entryList(filter, QDir::Files, QDir::Name);   //list all arf files in current directory
+
+//    qDebug() << aDir << aFList;
+    return aFList;
+}
+
+
+
 bool ReadImage::openIFileName(QString tFileName)
+
 {
     tFileName.remove(0,8);                                      // qml returns a URL with File:/// prefixed before c:/.... so remove it
     qDebug() << tFileName;
@@ -190,16 +205,66 @@ bool ReadImage::openIFileName(QString tFileName)
 
 
 
-QStringList ReadImage::listIFiles(QFileInfo aFInfo)
+bool ReadImage::prevIFile()
 {
-    QDir aDir(aFInfo.absoluteDir());                                        //create a QDir path
+    file.close();                                                       //close off the open file
+    QFileInfo iFileInfo(dirStr + "/" + iFileName);               //recreate complete filename to get info again
 
-    QStringList filter(QString("*.%1").arg(aFInfo.suffix()));               //filter on arfs or bins depending on what I selected in qml
-    QStringList aFList = aDir.entryList(filter, QDir::Files, QDir::Name);   //list all arf files in current directory
+    dirStr = iFileInfo.absolutePath();                             //separate the path string
+    iFileName = iFileInfo.baseName();                               //now this is just the filename alone
 
-//    qDebug() << aDir << aFList;
-    return aFList;
+    iFileList = listIFiles(iFileInfo);
+    qDebug() << dirStr << iFileName << iFileList;
+
+    int iNumber = iFileList.indexOf(iFileName + iFileInfo.suffix(), 0);
+
+    if (iNumber == 0){
+        iNumber = iFileList.size();
+    }
+
+    if (iNumber > 0){
+        iFileName = iFileList.at(iNumber - 1);
+        file.setFileName(dirStr + "/" + iFileName);                                                  //lets create a file
+        qDebug() << dirStr << iFileName << iNumber;
+    }
+
+    getBinHeaderData();
+    return true;
 }
+
+
+
+bool ReadImage::nextIFile()
+{
+    file.close();                                                       //close off the open file
+    QFileInfo iFileInfo(dirStr + "/" + iFileName);               //recreate complete filename to get info again
+
+    dirStr = iFileInfo.absolutePath();                             //separate the path string
+    iFileName = iFileInfo.baseName();                               //now this is just the filename alone
+
+    iFileList = listIFiles(iFileInfo);
+    qDebug() << dirStr << iFileName << iFileList;
+
+    int iNumber = iFileList.indexOf(iFileName + iFileInfo.suffix(), 0);
+
+    if ((iNumber + 1) == iFileList.size()){
+        iNumber = -1;
+    }
+
+    if ((iNumber + 1) < iFileList.size()){
+        iFileName = iFileList.at(iNumber + 1);
+        file.setFileName(dirStr + "/" + iFileName);                                                  //lets create a file
+        qDebug() << dirStr << iFileName << iNumber;
+    }
+
+    getBinHeaderData();
+    return true;
+}
+
+
+
+
+
 
 
 void ReadImage::getBinHeaderData()
@@ -381,7 +446,7 @@ int ReadImage::getBinImage(int rdrw, int frame)
 
 void ReadImage::timerTimeout()
 {
-    qDebug() << "hello from timer";
+//    qDebug() << "hello from timer";
     if (playMode){
         currentFrame++;
         redraw = 1;
@@ -515,25 +580,25 @@ quint32 ReadImage::eFrame()
 
 quint32 ReadImage::cFrame()
 {
-    qDebug() << currentFrame << "fuckKKK in currframe";
+//    qDebug() << currentFrame << "fuckKKK in currframe";
     return currentFrame;
 }
 
 void ReadImage::setCurrentFrame(int tCFrame)
 {
     currentFrame = tCFrame;
-    qDebug() << "hello from set current frame" << currentFrame;
+//    qDebug() << "hello from set current frame" << currentFrame;
 }
 
 void ReadImage::setStartFrame(int tSFrame)
 {
-    qDebug() << "hello from set start frame" << startFrame;
+//    qDebug() << "hello from set start frame" << startFrame;
     startFrame = tSFrame;
 }
 
 void ReadImage::setEndFrame(int tEFrame)
 {
-    qDebug() << "hello from set end frame" << endFrame;
+//    qDebug() << "hello from set end frame" << endFrame;
     endFrame = tEFrame;
 }
 

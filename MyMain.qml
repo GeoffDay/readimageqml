@@ -38,11 +38,9 @@ ApplicationWindow {
 
                     onClicked: {
                         if (mouse.button == Qt.RightButton)
-//                           console.log("pressed Right Button")
                            aBinImageFile.play()
                         else
-//                          console.log("pressed Left Button")
-                        aBinImageFile.pause()
+                           aBinImageFile.pause()
                     }
 
                     onWheel: {
@@ -54,48 +52,20 @@ ApplicationWindow {
                 }
 
 
-
-//                void ReadArf::wheelEvent(QWheelEvent *event)
-//                {
-//                    int numDegrees = event->delta() / 8;
-//                    int numSteps = numDegrees / 15;
-
-//                    if (event->buttons() == Qt::RightButton) {      //hold down right mouse button to change size
-
-//                        if((numSteps > 0) && (Magnification < 32)) {Magnification++;}
-//                        if((numSteps < 0) && (Magnification > 1)) {Magnification--;}
-
-//                        imageType = (arfDirStr  + "/" + arfFileName + " x" + QString::number(Magnification, 10));
-//                        emit wTitle(imageType);
-//                        resizeImage(&image, QSize(iWidth * Magnification, iHeight * Magnification));
-//                    } else {                                        //otherwise stop playing and allow mousewheel to control frames
-//                        playMode = false;
-//                        emit changePlay(playMode);
-
-//                        if (numSteps > 0) {++currentFrame;}
-//                        if (numSteps < 0) {--currentFrame;}
-//                    }
-
-//                    redraw = 1;
-//                    update();
-//                }
-
-
-
                 onStartFrameChanged: {
-                    console.log("updates S " + startFrame)
+//                    console.log("updates S " + startFrame)
                     iPos.startFrame = startFrame
                 }
                 onEndFrameChanged: {
-                    console.log("updates E " + endFrame)
+//                    console.log("updates E " + endFrame)
                     iPos.endFrame = endFrame
                 }
                 onCurrentFrameChanged: {
-                    console.log("updates C " + currentFrame)
+//                    console.log("updates C " + currentFrame)
                     iPos.currentFrame = currentFrame
                 }
                 onNFramesChanged: {
-                    console.log("updates N " + nFrames)
+//                    console.log("updates N " + nFrames)
                     iPos.nFrames = nFrames
                 }
             }
@@ -127,7 +97,10 @@ ApplicationWindow {
                 frColor: "#000000"
                 bkColor: "#80a060"
                 bdColor: "#004040"
-                onActivated: {console.log("prev file button")}
+                onActivated: {
+                    console.log("prev file button")
+                    aBinImageFile.prevIFile()
+                }
             }
 
             MyButton {
@@ -147,7 +120,10 @@ ApplicationWindow {
                 bkColor: "#c0b030"
                 bdColor: "#004040"
 
-                onActivated: {console.log("next file button pressed")}
+                onActivated: {
+                    console.log("next file button pressed")
+                    aBinImageFile.nextIFile()
+                }
             }
 
             Button {
@@ -156,7 +132,7 @@ ApplicationWindow {
                 Image {source: "playback_begin.png"}
 
                 onClicked: {
-                    console.log("begin button pressed")
+//                    console.log("begin button pressed")
                     aBinImageFile.begin()
                 }
             }
@@ -167,7 +143,7 @@ ApplicationWindow {
                 Image {source: "playback_rew.png"}
 
                 onClicked: {
-                    console.log("rewind 1 button pressed")
+//                    console.log("rewind 1 button pressed")
                     aBinImageFile.back()
                 }
             }
@@ -178,7 +154,7 @@ ApplicationWindow {
                 Image {source: "playback_play.png"}
 
                 onClicked: {
-                    console.log("play button pressed")
+//                    console.log("play button pressed")
                     aBinImageFile.play()
                     timer.start()
                 }
@@ -190,7 +166,7 @@ ApplicationWindow {
                 Image {source: "playback_pause.png"}
 
                 onClicked: {
-                    console.log("pause button pressed")
+//                    console.log("pause button pressed")
                     timer.stop()
                     aBinImageFile.pause()
                 }
@@ -202,7 +178,7 @@ ApplicationWindow {
                 Image {source: "playback_ff.png"}
 
                 onClicked: {
-                    console.log("forward button pressed")
+//                    console.log("forward button pressed")
                     aBinImageFile.forward()
                 }
             }
@@ -213,7 +189,7 @@ ApplicationWindow {
                 Image {source: "playback_end.png"}
 
                 onClicked: {
-                    console.log("end button pressed")
+//                    console.log("end button pressed")
                     aBinImageFile.end()
                 }
             }
@@ -253,7 +229,7 @@ ApplicationWindow {
 
                 onActivated: {
                     timer.interval = fRates.get(currentIndex).value
-                    console.log("setting mag as a text " + fRates.get(currentIndex).value)
+                    console.log("setting frame rate " + fRates.get(currentIndex).value)
 //                    timer.start()
                 }
               }
@@ -345,7 +321,7 @@ ApplicationWindow {
 
     Timer {
         id: timer
-        interval: 1000
+        interval: 20
         running: false
         repeat: true
         triggeredOnStart: true

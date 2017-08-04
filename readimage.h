@@ -31,6 +31,8 @@ public:
 
     QStringList listIFiles(QFileInfo);            // for next and prev file buttons
     Q_INVOKABLE bool openIFileName(QString);
+    Q_INVOKABLE bool prevIFile();
+    Q_INVOKABLE bool nextIFile();
     Q_INVOKABLE void setMagnification(int);
     Q_INVOKABLE int getBinImage(int, int);
     Q_INVOKABLE void timerTimeout();
