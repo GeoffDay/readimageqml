@@ -64,18 +64,18 @@ void ReadImage::setCTType(bool cTType)
 
 
 
-void ReadImage::getMin(int Value)
+void ReadImage::getMin(quint16 Value)
 {
     ctMin = Value;
-    recalcColourTable(ctMin, ctMax);
+//    recalcColourTable(ctMin, ctMax);
 }
 
 
 
-void ReadImage::getMax(int Value)
+void ReadImage::getMax(quint16 Value)
 {
     ctMax = Value;
-    recalcColourTable(ctMin, ctMax);
+//    recalcColourTable(ctMin, ctMax);
 }
 
 
@@ -435,7 +435,13 @@ int ReadImage::getBinImage(int rdrw, int frame)
         imageMin = (quint16)(((imageMin * 3) + ((97) * thisImageMin)) / 100);
         imageMax = (quint16)(((imageMax * 3) + ((97) * thisImageMax)) / 100);
 
-        if (AGC){recalcColourTable(imageMin, imageMax);}
+        if (AGC && ((abs(imageMin - ctMin) > 5) || (abs(imageMax - ctMax) > 5))){
+            recalcColourTable(imageMin, imageMax);
+//            qDebug() << imageMin << imageMax << ctMin << ctMax;
+        }
+
+        getMin(imageMin);
+        getMax(imageMax);
 
         emit newHistogram(histogram);
     }
@@ -446,7 +452,6 @@ int ReadImage::getBinImage(int rdrw, int frame)
 
 void ReadImage::timerTimeout()
 {
-//    qDebug() << "hello from timer";
     if (playMode){
         currentFrame++;
         redraw = 1;
@@ -501,15 +506,15 @@ void ReadImage::setName(const QString &name)
 
 void ReadImage::paint(QPainter *painter)
 {
-    QPen pen(Qt::green, 2);
-    painter->setPen(pen);
-    painter->setRenderHints(QPainter::Antialiasing, true);
-    painter->drawPie(boundingRect().adjusted(1, 1, -1, -1), 90 * 16, 290 * 16);
+//    QPen pen(Qt::green, 2);
+//    painter->setPen(pen);
+//    painter->setRenderHints(QPainter::Antialiasing, true);
+//    painter->drawPie(boundingRect().adjusted(1, 1, -1, -1), 90 * 16, 290 * 16);
 
     QRect dirtyRect = QRect(0,0,iWidth * magnification,(iHeight + 1) * magnification);
     painter->drawImage(dirtyRect, image);
 
-    qDebug() << "in paintevent" << iWidth << iHeight << magnification;
+//    qDebug() << "in paintevent" << iWidth << iHeight << magnification;
 }
 
 
@@ -587,7 +592,10 @@ quint32 ReadImage::cFrame()
 void ReadImage::setCurrentFrame(int tCFrame)
 {
     currentFrame = tCFrame;
-//    qDebug() << "hello from set current frame" << currentFrame;
+    if (!playMode) {
+        redraw = 1;                 // only do this if paused
+        timerTimeout();
+    }
 }
 
 void ReadImage::setStartFrame(int tSFrame)

@@ -36,6 +36,7 @@ public:
     Q_INVOKABLE void setMagnification(int);
     Q_INVOKABLE int getBinImage(int, int);
     Q_INVOKABLE void timerTimeout();
+//    Q_INVOKABLE void reDraw();
 
     void getBinHeaderData();
     QString name() const;
@@ -45,8 +46,8 @@ public:
     quint32 Magnification() const;
 
     void setCTType(bool);
-    void getMin(int);                               // from paletteRanges.qml code
-    void getMax(int);
+    void getMin(quint16);                               // from paletteRanges.qml code
+    void getMax(quint16);
     void setAGCOn();
     void setAGCOff();
     void pixScl(QString tString);
