@@ -169,7 +169,7 @@ QStringList ReadImage::listIFiles(QFileInfo aFInfo)
 {
     QDir aDir(aFInfo.absoluteDir());                                        //create a QDir path
 
-    QStringList filter(QString("*.%1").arg(aFInfo.suffix()));               //filter on arfs or bins depending on what I selected in qml
+    QStringList filter(QString("*.%1").arg(iExt));               //filter on arfs or bins depending on what I selected in qml
     QStringList aFList = aDir.entryList(filter, QDir::Files, QDir::Name);   //list all arf files in current directory
 
 //    qDebug() << aDir << aFList;
@@ -181,21 +181,28 @@ QStringList ReadImage::listIFiles(QFileInfo aFInfo)
 bool ReadImage::openIFileName(QString tFileName)
 
 {
+#ifdef Q_OS_UNIX
+    tFileName.remove(0,7);                                      // qml returns a URL with File:/// prefixed before c:/.... so remove it
+#else
     tFileName.remove(0,8);                                      // qml returns a URL with File:/// prefixed before c:/.... so remove it
+#endif
     qDebug() << tFileName;
     file.setFileName(tFileName);                                //lets create a file
     QFileInfo iFileInfo(tFileName);                             //lets get the file info
 
-    dirStr = iFileInfo.absolutePath();                          //separate the path string
+    dirStr = iFileInfo.path();                                  //separate the path string
     iFileName = iFileInfo.baseName();                           //now this is just the filename alone
+    iExt = iFileInfo.suffix();
+
+    qDebug() << iFileInfo.makeAbsolute();
 
     iFileList = listIFiles(iFileInfo);
-    qDebug() << dirStr << iFileName << iFileList;
+    qDebug() << dirStr << iFileName << iExt << iFileList;
 
     file.open(QIODevice::ReadOnly);         //Open the file for reading
 
     if (file.size() == 0){
-       qDebug() << "File %1:\n contains has zero file size.";
+       qDebug() << "File %1: has zero file size.";
         return false;
     }
 

@@ -36,7 +36,6 @@ public:
     Q_INVOKABLE void setMagnification(int);
     Q_INVOKABLE int getBinImage(int, int);
     Q_INVOKABLE void timerTimeout();
-//    Q_INVOKABLE void reDraw();
 
     void getBinHeaderData();
     QString name() const;

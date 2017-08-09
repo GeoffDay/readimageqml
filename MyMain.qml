@@ -196,7 +196,7 @@ ApplicationWindow {
 
             CheckButton {
                 id: loopy
-                on: true
+
                 onFlipped: {aBinImageFile.loop(tsState)}
             }
 
