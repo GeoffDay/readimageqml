@@ -15,5 +15,7 @@
         <file>end.png</file>
         <file>ImagePos.qml</file>
         <file>start.png</file>
+        <file>Palette.qml</file>
+        <file>ToggleButton.qml</file>
     </qresource>
 </RCC>

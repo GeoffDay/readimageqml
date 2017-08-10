@@ -200,7 +200,12 @@ ApplicationWindow {
                 onFlipped: {aBinImageFile.loop(tsState)}
             }
 
+            ToggleButton {
+                id: playPause
 
+                source1: "playback_play.png"
+                source2: "playback_pause.png"
+            }
 
             ComboBox {
                 id: fRate
