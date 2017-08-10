@@ -303,7 +303,6 @@ void ReadImage::getBinHeaderData()
         iHeight = quint32(*(headerPtr + 19));
 
         numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
-        numberOfFrames = 23;
         if (iWidth == 32) {
             imageType = "Gen 1 SPADs   ";
             magnification = 20;
@@ -320,12 +319,11 @@ void ReadImage::getBinHeaderData()
 
     qDebug() << "nframes" << numberOfFrames;
 
-//    emit nFrames(numberOfFrames);           //set our number of frames to the widget
-    emit nFramesChanged(numberOfFrames);
+    emit nFramesChanged(numberOfFrames);        //set our number of frames to the widget
 
     totalPixels = iWidth * iHeight;
 
-    filePos = file.pos();                   // get our current file position
+    filePos = file.pos();                       // get our current file position
     beginPos = filePos;
 //    resize(QSize((iWidth * magnification), (iHeight * magnification)));
 
@@ -347,7 +345,7 @@ void ReadImage::getBinHeaderData()
     redraw = 1;                         // 1 redraws current frame
 
     playMode = true;
-    emit changePlay(playMode);
+    emit playModeChanged(playMode);
     return;
 }
 
@@ -362,7 +360,7 @@ int ReadImage::getBinImage(int rdrw, int frame)
 
     QImage thisFrame(iWidth, iHeight, QImage::Format_RGB32);
 
-    quint16 colour, tColour, thisImageMin, thisImageMax;
+    quint16 colour, tColour, thisImageMin = 0, thisImageMax = 0;
 
     if ((rdrw > 0) && file.isOpen()) {
         rdrw--;
@@ -395,7 +393,7 @@ int ReadImage::getBinImage(int rdrw, int frame)
             }
         }
 
-        qDebug() << "hello from getbinimage" << magnification << iWidth;
+//        qDebug() << "hello from getbinimage" << magnification << iWidth;
 
         image = thisFrame.scaledToWidth(iWidth * magnification).mirrored(flipX, flipY);
 
@@ -499,25 +497,8 @@ QString ReadImage::IFileName() const
 }
 
 
-QString ReadImage::name() const
-{
-    return m_name;
-}
-
-
-void ReadImage::setName(const QString &name)
-{
-    m_name = name;
-}
-
-
 void ReadImage::paint(QPainter *painter)
 {
-//    QPen pen(Qt::green, 2);
-//    painter->setPen(pen);
-//    painter->setRenderHints(QPainter::Antialiasing, true);
-//    painter->drawPie(boundingRect().adjusted(1, 1, -1, -1), 90 * 16, 290 * 16);
-
     QRect dirtyRect = QRect(0,0,iWidth * magnification,(iHeight + 1) * magnification);
     painter->drawImage(dirtyRect, image);
 
@@ -525,7 +506,7 @@ void ReadImage::paint(QPainter *painter)
 }
 
 
-quint32 ReadImage::Magnification() const
+quint32 ReadImage::getMagnification() const
 {
     return magnification;
 }
@@ -533,33 +514,7 @@ quint32 ReadImage::Magnification() const
 
 void ReadImage::setMagnification(int iMag)
 {
-    qDebug() << "in setMagnification now" << iMag;
-
-    switch (iMag) {
-        case 0: magnification = 1;      //x1
-            break;
-        case 1: magnification = 2;      //x2
-            break;
-        case 2: magnification = 3;      //x3
-            break;
-        case 3: magnification = 4;      //x4
-            break;
-        case 4: magnification = 6;      //x6
-            break;
-        case 5: magnification = 8;      //x8
-            break;
-        case 6: magnification = 10;     //x10
-            break;
-        case 7: magnification = 12;     //x12
-            break;
-        case 8: magnification = 16;     //x16
-            break;
-        case 9: magnification = 20;     //x20
-            break;
-        case 10: magnification = 24;    //x24
-            break;
-        case 11: magnification = 32;    //x32
-    }
+    magnification = iMag;
 }
 
 
@@ -592,7 +547,6 @@ quint32 ReadImage::eFrame()
 
 quint32 ReadImage::cFrame()
 {
-//    qDebug() << currentFrame << "fuckKKK in currframe";
     return currentFrame;
 }
 
@@ -615,6 +569,19 @@ void ReadImage::setEndFrame(int tEFrame)
 {
 //    qDebug() << "hello from set end frame" << endFrame;
     endFrame = tEFrame;
+}
+
+
+void ReadImage::setPlayMode(bool tPMode)
+{
+    qDebug() << "hello from setPlayMode" << playMode;
+    playMode = tPMode;
+}
+
+
+bool ReadImage::getPlayMode()
+{
+    return playMode;
 }
 
 
@@ -671,6 +638,7 @@ void ReadImage::setAGCOff()
 void ReadImage::begin()
 {
     playMode = false;           // paused
+    emit playModeChanged(playMode);
     currentFrame = startFrame;  // first frame
     redraw = 1;                 // paused
     timerTimeout();
@@ -687,6 +655,7 @@ void ReadImage::back()
     }
 
     playMode = false;
+    emit playModeChanged(playMode);
     redraw = 1;
     timerTimeout();
 }
@@ -698,7 +667,7 @@ void ReadImage::play()
     playMode = true;
 
     redraw = 1;
-    emit changePlay(playMode);
+    emit playModeChanged(playMode);
     timerTimeout();
 }
 
@@ -708,7 +677,7 @@ void ReadImage::pause()
     playMode = false;
 
     redraw = 1;
-    emit changePlay(playMode);
+    emit playModeChanged(playMode);
     timerTimeout();
 }
 
@@ -731,6 +700,7 @@ void ReadImage::forward()
     }
 
     playMode = false;
+    emit playModeChanged(playMode);
     redraw = 1;
     timerTimeout();
 }
@@ -741,6 +711,7 @@ void ReadImage::end()
 {
     currentFrame = endFrame;   // end frame
     playMode = false;          // paused
+    emit playModeChanged(playMode);
     redraw = 1;                // paused
     timerTimeout();
 }

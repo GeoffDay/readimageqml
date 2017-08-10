@@ -12,12 +12,11 @@ ApplicationWindow {
 
     width: Screen.width - 600
     height: Screen.height - 200
-
+    property int magnification: 20
     onWindowStateChanged: {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
     }
 
-    
 
     title: qsTr("Player")
 
@@ -26,7 +25,6 @@ ApplicationWindow {
 
             ReadImage {
                 id: aBinImageFile
-    //            anchors.centerIn: parent
                 x: 2
                 y: 2
                 width: 1000; height: 1000
@@ -37,20 +35,26 @@ ApplicationWindow {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                     onClicked: {
-                        if (mouse.button == Qt.RightButton)
-                           aBinImageFile.play()
-                        else
-                           aBinImageFile.pause()
-                    }
+                        if (mouse.button == Qt.LeftButton)      // click to pause or play
+                                playPause.toggle()
+                        }
 
                     onWheel: {
-                        if (wheel.angleDelta.y > 0)
-                            aBinImageFile.forward()
-                        else if (wheel.angleDelta.y < 0)
-                            aBinImageFile.back()
+                        if (wheel.buttons == Qt.RightButton) {  // roll up to increase image size
+                            if((wheel.angleDelta.y > 0) && (magnification < 32)) aBinImageFile.setMagnification(magnification++)
+                            if((wheel.angleDelta.y < 0) && (magnification > 1)) aBinImageFile.setMagnification(magnification--)
+                        } else {
+                            playPause.reset()                   // play button is on left mouse button
+                            if (wheel.angleDelta.y > 0)
+                                aBinImageFile.forward()
+                            else if (wheel.angleDelta.y < 0)
+                                aBinImageFile.back()
+                        }
                     }
                 }
 
+                onPlayModeChanged: {
+                }
 
                 onStartFrameChanged: {
 //                    console.log("updates S " + startFrame)
@@ -143,34 +147,49 @@ ApplicationWindow {
                 Image {source: "playback_rew.png"}
 
                 onClicked: {
-//                    console.log("rewind 1 button pressed")
                     aBinImageFile.back()
                 }
             }
 
-            Button {
-                width: 32
-                height: 32
-                Image {source: "playback_play.png"}
+            ToggleButton {
+                id: playPause
+                state: "on"
+                source1: "playback_play.png"
+                source2: "playback_pause.png"
 
-                onClicked: {
-//                    console.log("play button pressed")
-                    aBinImageFile.play()
-                    timer.start()
+                onStateChanged: {
+                    if (playPause.state == "on") {
+                        aBinImageFile.play()
+                        timer.start()
+                    } else {
+                        aBinImageFile.pause()
+                        timer.stop()
+                    }
                 }
             }
 
-            Button {
-                width: 32
-                height: 32
-                Image {source: "playback_pause.png"}
+//            Button {
+//                width: 32
+//                height: 32
+//                Image {source: "playback_play.png"}
 
-                onClicked: {
-//                    console.log("pause button pressed")
-                    timer.stop()
-                    aBinImageFile.pause()
-                }
-            }
+//                onClicked: {
+//                    aBinImageFile.play()
+//                    timer.start()
+//                }
+//            }
+
+//            Button {
+//                width: 32
+//                height: 32
+//                Image {source: "playback_pause.png"}
+
+//                onClicked: {
+////                    console.log("pause button pressed")
+//                    timer.stop()
+//                    aBinImageFile.pause()
+//                }
+//            }
 
             Button {
                 width: 32
@@ -197,14 +216,9 @@ ApplicationWindow {
             CheckButton {
                 id: loopy
 
-                onFlipped: {aBinImageFile.loop(tsState)}
-            }
-
-            ToggleButton {
-                id: playPause
-
-                source1: "playback_play.png"
-                source2: "playback_pause.png"
+                onFlipped: {
+                    aBinImageFile.loop(tsState)
+                }
             }
 
             ComboBox {

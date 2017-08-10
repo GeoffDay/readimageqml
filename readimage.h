@@ -22,8 +22,9 @@ class ReadImage : public QQuickPaintedItem
     Q_PROPERTY(quint32 startFrame READ sFrame WRITE setStartFrame NOTIFY startFrameChanged)
     Q_PROPERTY(quint32 endFrame READ eFrame WRITE setEndFrame NOTIFY endFrameChanged)
     Q_PROPERTY(quint32 currentFrame READ cFrame WRITE setCurrentFrame NOTIFY currentFrameChanged)
+    Q_PROPERTY(bool playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
 
-    Q_PROPERTY(quint32 magnification READ Magnification WRITE setMagnification)
+    Q_PROPERTY(quint32 magnification READ getMagnification WRITE setMagnification)
     Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
 
 public:
@@ -34,15 +35,15 @@ public:
     Q_INVOKABLE bool prevIFile();
     Q_INVOKABLE bool nextIFile();
     Q_INVOKABLE void setMagnification(int);
+    Q_INVOKABLE quint32 getMagnification() const;
     Q_INVOKABLE int getBinImage(int, int);
     Q_INVOKABLE void timerTimeout();
+    Q_INVOKABLE bool getPlayMode();
+    Q_INVOKABLE void setPlayMode(bool);
 
     void getBinHeaderData();
-    QString name() const;
     QString IFileName() const;
-    void setName(const QString &name);
     void paint(QPainter *painter);
-    quint32 Magnification() const;
 
     void setCTType(bool);
     void getMin(quint16);                               // from paletteRanges.qml code
@@ -81,7 +82,7 @@ signals:
     void newHistogram(QVector<quint32>);
     void newColourTable(QVector<QRgb>);
 //    void newImageLimits(QPoint(int, int));
-    void changePlay(bool);
+    void playModeChanged(bool);
     void agcState(bool);
 //    void nFrames(quint32);
 

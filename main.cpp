@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<ReadImage>("Readstuff", 1, 0, "ReadImage");
 
     QQmlApplicationEngine engine;
-    engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+    engine.load(QUrl(QLatin1String("qrc:/MyMain.qml")));
 
 
 

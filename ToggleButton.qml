@@ -6,7 +6,7 @@ Item {
     property string source1: ""
     property string source2: ""
 
-    state: "on"
+    state: "off"
     width: icon.width;
     height: icon.height
 
@@ -24,10 +24,22 @@ Item {
         }
     }
 
+    function set() {
+            togglebutton.state = "on";
+            togglebutton.flipped(true)
+            icon.source = source2
+    }
+
+    function reset() {
+            togglebutton.state = "off"
+            togglebutton.flipped(false)
+            icon.source = source1
+    }
+
 
     Image {
         id: icon
-        source: source1
+        source: source2
 
         MouseArea {
             anchors.fill: parent
