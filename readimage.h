@@ -23,6 +23,8 @@ class ReadImage : public QQuickPaintedItem
     Q_PROPERTY(quint32 endFrame READ eFrame WRITE setEndFrame NOTIFY endFrameChanged)
     Q_PROPERTY(quint32 currentFrame READ cFrame WRITE setCurrentFrame NOTIFY currentFrameChanged)
     Q_PROPERTY(bool playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY(quint32 ctMin READ getCTMin WRITE setCTMin NOTIFY ctMinChanged)
+    Q_PROPERTY(quint32 ctMax READ getCTMax WRITE setCTMax NOTIFY ctMaxChanged)
 
     Q_PROPERTY(quint32 magnification READ getMagnification WRITE setMagnification)
     Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
@@ -40,6 +42,10 @@ public:
     Q_INVOKABLE void timerTimeout();
     Q_INVOKABLE bool getPlayMode();
     Q_INVOKABLE void setPlayMode(bool);
+    Q_INVOKABLE void setCTMin(quint32);
+    Q_INVOKABLE void setCTMax(quint32 tCTMax);
+    Q_INVOKABLE quint32 getCTMin();
+    Q_INVOKABLE quint32 getCTMax();
 
     void getBinHeaderData();
     QString IFileName() const;
@@ -83,6 +89,9 @@ signals:
     void newColourTable(QVector<QRgb>);
 //    void newImageLimits(QPoint(int, int));
     void playModeChanged(bool);
+    void ctMinChanged(quint32 ctMin);
+    void ctMaxChanged(quint32 ctMax);
+
     void agcState(bool);
 //    void nFrames(quint32);
 

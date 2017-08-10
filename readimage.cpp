@@ -515,6 +515,8 @@ quint32 ReadImage::getMagnification() const
 void ReadImage::setMagnification(int iMag)
 {
     magnification = iMag;
+    redraw = 1;
+    timerTimeout();
 }
 
 
@@ -582,6 +584,26 @@ void ReadImage::setPlayMode(bool tPMode)
 bool ReadImage::getPlayMode()
 {
     return playMode;
+}
+
+void ReadImage::setCTMin(quint32 tCTMin)
+{
+    ctMin = tCTMin;
+}
+
+void ReadImage::setCTMax(quint32 tCTMax)
+{
+    ctMax = tCTMax;
+}
+
+quint32 ReadImage::getCTMin()
+{
+    return ctMin;
+}
+
+quint32 ReadImage::getCTMax()
+{
+    return ctMax;
 }
 
 
