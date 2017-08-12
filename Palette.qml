@@ -32,7 +32,7 @@ Item {
             grey.opacity = 100
             lcii.opacity = 0
         }
-        setPaletteObject.setCTType(cTableType)
+        aBinImageFile.setCTType(cTableType)
     }
 
     onAGCChanged: setAGC()     //initially this came from the widget.cpp now its internal
@@ -42,10 +42,10 @@ Item {
         aGCText = ""                        //get rid of the text
 
         if (aGC) {
-            setPaletteObject.setAGCOn()
+            aBinImageFile.setAGCOn()
             background.color = "lightyellow"
         } else {
-            setPaletteObject.setAGCOff()
+            aBinImageFile.setAGCOff()
             background.color = "whitesmoke"
         }
 
@@ -112,7 +112,7 @@ Item {
             drag.minimumY: (maxPointer.y + 1.2 * minPointer.height) + 1
             drag.maximumY: palette.height - minPointer.height
             onEntered: aGC = false
-            onMouseYChanged: setPaletteObject.getMin(minText.text / pixelScale)
+            onMouseYChanged: aBinImageFile.setCTMin(minText.text / pixelScale)
         }
     }
 
@@ -148,7 +148,7 @@ Item {
             drag.minimumY: 0
             drag.maximumY: (minPointer.y - 1.2 * maxPointer.height) - 1
             onEntered: aGC = false
-            onMouseYChanged: setPaletteObject.getMax(maxText.text / pixelScale)
+            onMouseYChanged:  aBinImageFile.setCTMax(maxText.text / pixelScale)
         }
     }
 

@@ -25,6 +25,7 @@ class ReadImage : public QQuickPaintedItem
     Q_PROPERTY(bool playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
     Q_PROPERTY(quint32 ctMin READ getCTMin WRITE setCTMin NOTIFY ctMinChanged)
     Q_PROPERTY(quint32 ctMax READ getCTMax WRITE setCTMax NOTIFY ctMaxChanged)
+    Q_PROPERTY(bool colourTableType READ getCTMax WRITE setCTType NOTIFY ctTypeChanged)
 
     Q_PROPERTY(quint32 magnification READ getMagnification WRITE setMagnification)
     Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
@@ -46,16 +47,16 @@ public:
     Q_INVOKABLE void setCTMax(quint32 tCTMax);
     Q_INVOKABLE quint32 getCTMin();
     Q_INVOKABLE quint32 getCTMax();
+    Q_INVOKABLE void setCTType(bool);
+    Q_INVOKABLE void setAGCOn();
+    Q_INVOKABLE void setAGCOff();
 
     void getBinHeaderData();
     QString IFileName() const;
     void paint(QPainter *painter);
 
-    void setCTType(bool);
-    void getMin(quint16);                               // from paletteRanges.qml code
-    void getMax(quint16);
-    void setAGCOn();
-    void setAGCOff();
+//    void getMin(quint16);                               // from palett#ifdef Q_OS_UNIXeRanges.qml code
+//    void getMax(quint16);
     void pixScl(QString tString);
 
     Q_INVOKABLE void setCurrentFrame(int tCFrame);
@@ -89,6 +90,7 @@ signals:
     void newColourTable(QVector<QRgb>);
 //    void newImageLimits(QPoint(int, int));
     void playModeChanged(bool);
+    void ctTypeChanged(bool);
     void ctMinChanged(quint32 ctMin);
     void ctMaxChanged(quint32 ctMax);
 
@@ -97,19 +99,18 @@ signals:
 
 
 private:
-    QFile file, exportFile;
-    QString dirStr, pixStr, imageType;
-    QString iFileName, iExt, exportFileName;
-    QStringList iFileList;
-    quint32 spadVersion, fileVersion, filePos, beginPos, endPos, redraw;
-    quint32 outlierThreshold, ctMin, ctMax;               //colour table min and max
-
     QImage image;
-    double pixelScale;
-    quint32 iWidth, iHeight, imageMin, imageMax,totalPixels, xPos, yPos;
+    QFile file, exportFile;
+    QStringList iFileList;
+    QString pixStr, imageType;
+    QString dirStr, iFileName, iExt, exportFileName;
+    quint32 iWidth, iHeight,totalPixels, xPos, yPos;
     quint32 numberOfFrames, currentFrame, startFrame, endFrame, magnification;
+    quint32 spadVersion, fileVersion, filePos, beginPos, endPos, redraw;
+    quint32 outlierThreshold, ctMin, ctMax, imageMin, imageMax;               //colour table min and max
+
+    double pixelScale;
     bool flipX, flipY, loopMode, playMode, colourTableType, AGC;
-    QString m_name;
 
     QVector<quint16> byteSwapTable;     //used for byteswapping the file data
     QVector<quint32> histogram;         //used to create a histogram of values needs to be 32 as 1024 * 768 = 786432

@@ -53,6 +53,14 @@ ApplicationWindow {
                     }
                 }
 
+                onCtMinChanged: {
+                    palette.min = ctMin
+                }
+
+                onCtMaxChanged: {
+                    palette.max = ctMax
+                }
+
                 onPlayModeChanged: {
                 }
 

@@ -64,19 +64,19 @@ void ReadImage::setCTType(bool cTType)
 
 
 
-void ReadImage::getMin(quint16 Value)
-{
-    ctMin = Value;
+//void ReadImage::getMin(quint16 Value)
+//{
+//    ctMin = Value;
 //    recalcColourTable(ctMin, ctMax);
-}
+//}
 
 
 
-void ReadImage::getMax(quint16 Value)
-{
-    ctMax = Value;
-//    recalcColourTable(ctMin, ctMax);
-}
+//void ReadImage::getMax(quint16 Value)
+//{
+//    ctMax = Value;
+////    recalcColourTable(ctMin, ctMax);
+//}
 
 
 
@@ -145,7 +145,7 @@ void ReadImage::genLCIIColourTable(quint16 min, quint16 max)
         ranges = 1;
     }
 
-//    qDebug() << "ranges" << ranges << "scale" << scale;
+    qDebug() << "ranges" << ranges << "scale" << scale;
 
     for (int i = 0; i < qMin(min, max); i++){colourTable.append(qRgb(0,0,0));}                                      // make numbers below min black
     for (int i = 0; i < ranges; i++){colourTable.append(qRgb((int)(i * scale), 0, (int)(i * scale)));}              //generate Black to Magenta
@@ -437,19 +437,23 @@ int ReadImage::getBinImage(int rdrw, int frame)
             }
         }
 
-        imageMin = (quint16)(((imageMin * 3) + ((97) * thisImageMin)) / 100);
-        imageMax = (quint16)(((imageMax * 3) + ((97) * thisImageMax)) / 100);
+        imageMin = (quint16)(((imageMin * 3) + (97 * thisImageMin)) / 100);
+        imageMax = (quint16)(((imageMax * 3) + (97 * thisImageMax)) / 100);
 
-        if (AGC && ((abs(imageMin - ctMin) > 5) || (abs(imageMax - ctMax) > 5))){
-            recalcColourTable(imageMin, imageMax);
-//            qDebug() << imageMin << imageMax << ctMin << ctMax;
+
+        if (AGC && (abs(imageMin - ctMin) > 5)){
+
+            emit ctMinChanged(imageMin);
+            recalcColourTable(ctMin, ctMax);
         }
 
-        getMin(imageMin);
-        getMax(imageMax);
+        if (AGC && (abs(imageMax - ctMax) > 5)){
+            emit ctMaxChanged(imageMax); }
+            recalcColourTable(ctMin, ctMax);
+        }
 
         emit newHistogram(histogram);
-    }
+
     return rdrw;
 }
 
@@ -589,6 +593,7 @@ bool ReadImage::getPlayMode()
 void ReadImage::setCTMin(quint32 tCTMin)
 {
     ctMin = tCTMin;
+    qDebug() << ctMin;
 }
 
 void ReadImage::setCTMax(quint32 tCTMax)
