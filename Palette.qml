@@ -86,7 +86,7 @@ Item {
         id: minPointer
         x: 1
         y: Math.round((palette.height - minPointer.height) - (min * pScale))
-        width: 26;                  height: 10
+        width: 26;                  height: 12
 
         Rectangle {
             anchors.centerIn: parent
@@ -96,7 +96,7 @@ Item {
 
         Text {
             id: minText
-            x: 30;          y: parent.top - 4
+            x: 30;          y: parent.top
             height: parent.height
             font.pixelSize: 13;     smooth: true
             color: "black"
@@ -121,7 +121,7 @@ Item {
         id: maxPointer
         x: 1
         y:  Math.round((palette.height - 2 * minPointer.height) - (max * pScale))
-        width: 26;                  height: 10
+        width: 26;                  height: 12
 
 
         Rectangle {
@@ -132,7 +132,7 @@ Item {
 
         Text {
             id: maxText
-            x: 30;          y: parent.top - 4
+            x: 30;          y: parent.top
             height: parent.height
             font.pixelSize: 13;     smooth: true
             color: "black"

@@ -33,7 +33,7 @@ class ReadImage : public QQuickPaintedItem
 public:
     ReadImage(QQuickItem *parent = 0);
 
-    QStringList listIFiles(QFileInfo);            // for next and prev file buttons
+    QStringList listIFiles(QString aFileName);            // for next and prev file buttons
     Q_INVOKABLE bool openIFileName(QString);
     Q_INVOKABLE bool prevIFile();
     Q_INVOKABLE bool nextIFile();

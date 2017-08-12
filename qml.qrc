@@ -17,5 +17,6 @@
         <file>start.png</file>
         <file>Palette.qml</file>
         <file>ToggleButton.qml</file>
+        <file>MetaData.qml</file>
     </qresource>
 </RCC>

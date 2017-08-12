@@ -14,11 +14,11 @@
 #include <QMouseEvent>
 #include <QDataStream>
 #include <QImageWriter>
-
+#include <QStringBuilder>
 
 #include "readimage.h"
 
-#define IRANGE 4095
+#define IRANGE 4095                         // so far I'm assuming 12 bits for princeton and SPAD so far. Arf may be higher....
 
 ReadImage::ReadImage(QQuickItem *parent)
     : QQuickPaintedItem(parent)
@@ -64,21 +64,6 @@ void ReadImage::setCTType(bool cTType)
 
 
 
-//void ReadImage::getMin(quint16 Value)
-//{
-//    ctMin = Value;
-//    recalcColourTable(ctMin, ctMax);
-//}
-
-
-
-//void ReadImage::getMax(quint16 Value)
-//{
-//    ctMax = Value;
-////    recalcColourTable(ctMin, ctMax);
-//}
-
-
 
 void ReadImage::recalcColourTable(quint16 min, quint16 max)
 {
@@ -91,6 +76,9 @@ void ReadImage::recalcColourTable(quint16 min, quint16 max)
         if (min > 0) { min -= 1;}
         if (max < IRANGE) {max += 1;}
     }
+
+    emit ctMinChanged(ctMin);
+    emit ctMaxChanged(ctMax);
 
     if (colourTableType) {
         genLCIIColourTable(min, max);
@@ -145,7 +133,7 @@ void ReadImage::genLCIIColourTable(quint16 min, quint16 max)
         ranges = 1;
     }
 
-    qDebug() << "ranges" << ranges << "scale" << scale;
+//    qDebug() << "ranges" << ranges << "scale" << scale;
 
     for (int i = 0; i < qMin(min, max); i++){colourTable.append(qRgb(0,0,0));}                                      // make numbers below min black
     for (int i = 0; i < ranges; i++){colourTable.append(qRgb((int)(i * scale), 0, (int)(i * scale)));}              //generate Black to Magenta
@@ -157,7 +145,7 @@ void ReadImage::genLCIIColourTable(quint16 min, quint16 max)
     for (int i = 0; i < ranges; i++){colourTable.append(qRgb(255, 255, (int)(i * scale)));}                         //generate Yellow to White
     for (int i = (qMin(min, max) + 7 * ranges); i < 65536; i++){colourTable.append(qRgb(255,255,255));}             // make numbers above max white
 
-    qDebug() << "LCII colour table. min" << min << "max" << max << "number of elements" << colourTable.size();
+    qDebug() << "LCII min" << min << "max" << max ;
     colourTableType = true;                                             // true is a LCII colour table
     redraw = 1;
     emit newColourTable(colourTable);
@@ -165,15 +153,25 @@ void ReadImage::genLCIIColourTable(quint16 min, quint16 max)
 
 
 
-QStringList ReadImage::listIFiles(QFileInfo aFInfo)
+QStringList ReadImage::listIFiles(QString aFileName)
 {
-    QDir aDir(aFInfo.absoluteDir());                                        //create a QDir path
+    qDebug() << aFileName;
+    QFileInfo iFileInfo(aFileName);                             //lets get the file info
+    qDebug() << iFileInfo.makeAbsolute();
 
-    QStringList filter(QString("*.%1").arg(iExt));               //filter on arfs or bins depending on what I selected in qml
-    QStringList aFList = aDir.entryList(filter, QDir::Files, QDir::Name);   //list all arf files in current directory
+    dirStr = iFileInfo.absolutePath();                          //separate the path string
+    iFileName = iFileInfo.baseName();                           //now this is just the filename alone
+    iExt = iFileInfo.suffix();                                  //and the extension
 
-//    qDebug() << aDir << aFList;
-    return aFList;
+    QDir iDir(iFileInfo.absoluteDir());                         //create a QDir path
+    iDir.setFilter(QDir::Files | QDir::NoSymLinks);
+    iDir.setSorting(QDir::Name | QDir::Reversed);
+
+    QStringList filter(QString("*.%1").arg(iExt));              //filter on arfs or bins depending on what I selected in qml
+    QStringList iFList = iDir.entryList(filter, QDir::Files, QDir::Name);   //list all arf files in current directory
+
+    qDebug() << filter << dirStr << iFileName << iExt << iFileList;
+    return iFList;
 }
 
 
@@ -187,24 +185,11 @@ bool ReadImage::openIFileName(QString tFileName)
     tFileName.remove(0,8);                                      // qml returns a URL with File:/// prefixed before c:/.... so remove it
 #endif
     qDebug() << tFileName;
+
+    iFileList = listIFiles(tFileName);                          //return a list of similar files in that Dir
+    iFileList = listIFiles(tFileName);                          //doing this twice gets the list properly
+
     file.setFileName(tFileName);                                //lets create a file
-    QFileInfo iFileInfo(tFileName);                             //lets get the file info
-
-    dirStr = iFileInfo.path();                                  //separate the path string
-    iFileName = iFileInfo.baseName();                           //now this is just the filename alone
-    iExt = iFileInfo.suffix();
-
-    qDebug() << iFileInfo.makeAbsolute();
-
-    iFileList = listIFiles(iFileInfo);
-    qDebug() << dirStr << iFileName << iExt << iFileList;
-
-    file.open(QIODevice::ReadOnly);         //Open the file for reading
-
-    if (file.size() == 0){
-       qDebug() << "File %1: has zero file size.";
-        return false;
-    }
 
     getBinHeaderData();
     return true;
@@ -214,27 +199,21 @@ bool ReadImage::openIFileName(QString tFileName)
 
 bool ReadImage::prevIFile()
 {
-    file.close();                                                       //close off the open file
-    QFileInfo iFileInfo(dirStr + "/" + iFileName);               //recreate complete filename to get info again
+    file.close();                                           //close off the open file
+    iFileList = listIFiles(file.fileName());                      //what if the dir is added too
 
-    dirStr = iFileInfo.absolutePath();                             //separate the path string
-    iFileName = iFileInfo.baseName();                               //now this is just the filename alone
+    int iNumber = iFileList.indexOf(iFileName % "." % iExt, 0);          //get the index of the last file
 
-    iFileList = listIFiles(iFileInfo);
-    qDebug() << dirStr << iFileName << iFileList;
-
-    int iNumber = iFileList.indexOf(iFileName + iFileInfo.suffix(), 0);
-
-    if (iNumber == 0){
+    if (iNumber == 0){                                      //if we're at zero go back to the end
         iNumber = iFileList.size();
     }
 
     if (iNumber > 0){
         iFileName = iFileList.at(iNumber - 1);
-        file.setFileName(dirStr + "/" + iFileName);                                                  //lets create a file
-        qDebug() << dirStr << iFileName << iNumber;
+        file.setFileName(dirStr % "/" % iFileName);  //lets create a file
     }
 
+    qDebug() << dirStr << iFileName << iNumber;
     getBinHeaderData();
     return true;
 }
@@ -243,33 +222,24 @@ bool ReadImage::prevIFile()
 
 bool ReadImage::nextIFile()
 {
-    file.close();                                                       //close off the open file
-    QFileInfo iFileInfo(dirStr + "/" + iFileName);               //recreate complete filename to get info again
+    file.close();                                           //close off the open file
+    iFileList = listIFiles(file.fileName());                      //what if the dir is added too
 
-    dirStr = iFileInfo.absolutePath();                             //separate the path string
-    iFileName = iFileInfo.baseName();                               //now this is just the filename alone
+    int iNumber = iFileList.indexOf(iFileName % "." % iExt, 0);
 
-    iFileList = listIFiles(iFileInfo);
-    qDebug() << dirStr << iFileName << iFileList;
-
-    int iNumber = iFileList.indexOf(iFileName + iFileInfo.suffix(), 0);
-
-    if ((iNumber + 1) == iFileList.size()){
+    if ((iNumber + 1) == iFileList.size()){                 //if we're at the end go back to zero
         iNumber = -1;
     }
 
     if ((iNumber + 1) < iFileList.size()){
         iFileName = iFileList.at(iNumber + 1);
         file.setFileName(dirStr + "/" + iFileName);                                                  //lets create a file
-        qDebug() << dirStr << iFileName << iNumber;
     }
 
+    qDebug() << dirStr << iFileName << iNumber;
     getBinHeaderData();
     return true;
 }
-
-
-
 
 
 
@@ -281,15 +251,16 @@ void ReadImage::getBinHeaderData()
     // get the image size details and calculate the number of frames
     // the header data is 64 bytes long regardless of actual resolution due 1st SPADs 32 x 32.
 
-    qDebug() << "hello from getBinHeaderData";
+    file.open(QIODevice::ReadOnly);                             //Open the file for reading
 
-
-
+    if (file.size() == 0){
+       qDebug() << "File %1: has zero file size.";
+        return;
+    }
 
     QByteArray baHeader(64, 0);
     baHeader = file.read(64);      // read the header to a bytearray
     quint16 *headerPtr = reinterpret_cast<quint16 *>(baHeader.data());   // create a pointer to that bytearray and
-    qDebug() << "hello from getBinHeaderData" << *headerPtr;
 
     if (*headerPtr == 0x55AA) { // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
         imageType = "Princeton SPAD";
@@ -437,23 +408,23 @@ int ReadImage::getBinImage(int rdrw, int frame)
             }
         }
 
-        imageMin = (quint16)(((imageMin * 3) + (97 * thisImageMin)) / 100);
-        imageMax = (quint16)(((imageMax * 3) + (97 * thisImageMax)) / 100);
+        imageMin = (quint16)(((imageMin * 97) + (3 * thisImageMin)) / 100);
+        imageMax = (quint16)(((imageMax * 97) + (3 * thisImageMax)) / 100);
 
 
-        if (AGC && (abs(imageMin - ctMin) > 5)){
-
+        if (AGC && (abs(imageMin - ctMin) > 2)){
+            setCTMin(imageMin);
             emit ctMinChanged(imageMin);
-            recalcColourTable(ctMin, ctMax);
+//            recalcColourTable(ctMin, ctMax);
         }
 
-        if (AGC && (abs(imageMax - ctMax) > 5)){
-            emit ctMaxChanged(imageMax); }
-            recalcColourTable(ctMin, ctMax);
+        if (AGC && (abs(imageMax - ctMax) > 2)){
+            setCTMax(imageMax);
+            emit ctMaxChanged(imageMax);}
+//            recalcColourTable(ctMin, ctMax);
         }
 
         emit newHistogram(histogram);
-
     return rdrw;
 }
 
@@ -593,12 +564,13 @@ bool ReadImage::getPlayMode()
 void ReadImage::setCTMin(quint32 tCTMin)
 {
     ctMin = tCTMin;
-    qDebug() << ctMin;
+    recalcColourTable(ctMin, ctMax);
 }
 
 void ReadImage::setCTMax(quint32 tCTMax)
 {
     ctMax = tCTMax;
+    recalcColourTable(ctMin, ctMax);
 }
 
 quint32 ReadImage::getCTMin()
@@ -616,9 +588,10 @@ quint32 ReadImage::getCTMax()
 void ReadImage::setAGCOn()
 {
     AGC = true;
- //   recalcColourTable(imageMin, imageMax);
+    recalcColourTable(imageMin, imageMax);
     ctMin = imageMin;
     ctMax = imageMax;
+
     //emit newColourTable(colourTable);
     emit agcState(true);
 }

@@ -84,10 +84,10 @@ ApplicationWindow {
 
             Palette {
                 id: palette
-                width: 50
+                width: 70
                 height: mainWindow.height - 100
                 y: 0
-                x: mainWindow.width - palette.width
+                x: mainWindow.width
             }
         }
 
