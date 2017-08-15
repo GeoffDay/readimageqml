@@ -262,6 +262,8 @@ void ReadImage::getBinHeaderData()
     baHeader = file.read(64);      // read the header to a bytearray
     quint16 *headerPtr = reinterpret_cast<quint16 *>(baHeader.data());   // create a pointer to that bytearray and
 
+    qDebug() << "hello from him";
+
     if (*headerPtr == 0x55AA) { // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
         imageType = "Princeton SPAD";
         iWidth = 32;
@@ -273,7 +275,6 @@ void ReadImage::getBinHeaderData()
         iWidth = quint32(*(headerPtr + 18));
         iHeight = quint32(*(headerPtr + 19));
 
-        numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
         if (iWidth == 32) {
             imageType = "Gen 1 SPADs   ";
             magnification = 20;
@@ -288,9 +289,10 @@ void ReadImage::getBinHeaderData()
     QImage image(iWidth * magnification, iHeight * magnification, QImage::Format_RGB32);
     image.fill(0xFF0606f0);
 
-    qDebug() << "nframes" << numberOfFrames;
-
+    numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
     emit nFramesChanged(numberOfFrames);        //set our number of frames to the widget
+
+    qDebug() << "imageType " << imageType << spadVersion << iWidth << iHeight << numberOfFrames;
 
     totalPixels = iWidth * iHeight;
 
