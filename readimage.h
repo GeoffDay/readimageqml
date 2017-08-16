@@ -18,6 +18,7 @@
 class ReadImage : public QQuickPaintedItem
 {
     Q_OBJECT
+    Q_PROPERTY(QString fNameInfo READ fName NOTIFY fNameInfoChanged)
     Q_PROPERTY(quint32 nFrames READ nFrames NOTIFY nFramesChanged)
     Q_PROPERTY(quint32 startFrame READ sFrame WRITE setStartFrame NOTIFY startFrameChanged)
     Q_PROPERTY(quint32 endFrame READ eFrame WRITE setEndFrame NOTIFY endFrameChanged)
@@ -58,6 +59,7 @@ public:
 //    void getMin(quint16);                               // from palett#ifdef Q_OS_UNIXeRanges.qml code
 //    void getMax(quint16);
     void pixScl(QString tString);
+    Q_INVOKABLE QString fName();
 
     Q_INVOKABLE void setCurrentFrame(int tCFrame);
     Q_INVOKABLE void setStartFrame(int tSFrame);
@@ -89,24 +91,23 @@ signals:
     void newHistogram(QVector<quint32>);
     void newColourTable(QVector<QRgb>);
 //    void newImageLimits(QPoint(int, int));
+    void fNameInfoChanged(QString);
     void playModeChanged(bool);
     void ctTypeChanged(bool);
     void ctMinChanged(quint32 ctMin);
     void ctMaxChanged(quint32 ctMax);
-
     void agcState(bool);
-//    void nFrames(quint32);
 
 
 private:
     QImage image;
     QFile file, exportFile;
     QStringList iFileList;
-    QString pixStr, imageType;
+    QString pixStr, imageType, fNameandImagetype;
     QString dirStr, iFileName, iExt, exportFileName;
     quint32 iWidth, iHeight,totalPixels, xPos, yPos;
     quint32 numberOfFrames, currentFrame, startFrame, endFrame, magnification;
-    quint32 spadVersion, fileVersion, filePos, beginPos, endPos, redraw;
+    quint32 spadVersion, fileVersion, filePos, redraw;
     quint32 outlierThreshold, ctMin, ctMax, imageMin, imageMax;               //colour table min and max
 
     double pixelScale;

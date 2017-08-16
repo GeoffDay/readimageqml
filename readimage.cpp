@@ -262,7 +262,6 @@ void ReadImage::getBinHeaderData()
     baHeader = file.read(64);      // read the header to a bytearray
     quint16 *headerPtr = reinterpret_cast<quint16 *>(baHeader.data());   // create a pointer to that bytearray and
 
-    qDebug() << "hello from him";
 
     if (*headerPtr == 0x55AA) { // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
         imageType = "Princeton SPAD";
@@ -280,11 +279,19 @@ void ReadImage::getBinHeaderData()
             magnification = 20;
          }
 
+        if (iWidth == 64) {
+            imageType = "Processed Gen 1 SPADs   ";
+            magnification = 10;
+        }
+
         if (iWidth == 128) {
             imageType = "Gen 2 SPADs   ";
             magnification = 5;
          }
     }
+
+    fNameandImagetype = QString("%1/%2  %3").arg(dirStr).arg(iFileName).arg(imageType);
+    emit fNameInfoChanged(fNameandImagetype);
 
     QImage image(iWidth * magnification, iHeight * magnification, QImage::Format_RGB32);
     image.fill(0xFF0606f0);
@@ -297,7 +304,6 @@ void ReadImage::getBinHeaderData()
     totalPixels = iWidth * iHeight;
 
     filePos = file.pos();                       // get our current file position
-    beginPos = filePos;
 //    resize(QSize((iWidth * magnification), (iHeight * magnification)));
 
     setAGCOn();
@@ -414,13 +420,13 @@ int ReadImage::getBinImage(int rdrw, int frame)
         imageMax = (quint16)(((imageMax * 97) + (3 * thisImageMax)) / 100);
 
 
-        if (AGC && (abs(imageMin - ctMin) > 2)){
+        if (AGC && (abs(quint16(imageMin - ctMin)) > 2)){
             setCTMin(imageMin);
             emit ctMinChanged(imageMin);
 //            recalcColourTable(ctMin, ctMax);
         }
 
-        if (AGC && (abs(imageMax - ctMax) > 2)){
+        if (AGC && (abs(quint16(imageMax - ctMax)) > 2)){
             setCTMax(imageMax);
             emit ctMaxChanged(imageMax);}
 //            recalcColourTable(ctMin, ctMax);
@@ -508,6 +514,11 @@ void ReadImage::pixScl(QString tString)
     }
 }
 
+
+QString ReadImage::fName()
+{
+    return fNameandImagetype;
+}
 
 quint32 ReadImage::nFrames()
 {

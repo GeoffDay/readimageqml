@@ -13,6 +13,8 @@ ApplicationWindow {
     width: Screen.width - 600
     height: Screen.height - 200
     property int magnification: 20
+    property string fNameInfo: ""
+
     onWindowStateChanged: {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
     }
@@ -23,73 +25,68 @@ ApplicationWindow {
         Row {
             spacing: 5
 
-            ReadImage {
-                id: aBinImageFile
-                x: 2
-                y: 2
-                width: 1000; height: 1000
+            Column {
+                    ReadImage {
+                        id: aBinImageFile
+                        x: 2
+                        y: 2
+                        width: 1000; height: 1000
 
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        MouseArea {
+                            id: mouseArea
+                            anchors.fill: parent
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-                    onClicked: {
-                        if (mouse.button == Qt.LeftButton)      // click to pause or play
-                                playPause.toggle()
+                            onClicked: {
+                                if (mouse.button == Qt.LeftButton)      // click to pause or play
+                                        playPause.toggle()
+                                }
+
+                            onWheel: {
+                                if (wheel.buttons == Qt.RightButton) {  // roll up to increase image size
+                                    if((wheel.angleDelta.y > 0) && (magnification < 32)) aBinImageFile.setMagnification(magnification++)
+                                    if((wheel.angleDelta.y < 0) && (magnification > 1)) aBinImageFile.setMagnification(magnification--)
+                                } else {
+                                    playPause.reset()                   // play button is on left mouse button
+                                    if (wheel.angleDelta.y > 0)
+                                        aBinImageFile.forward()
+                                    else if (wheel.angleDelta.y < 0)
+                                        aBinImageFile.back()
+                                }
+                            }
                         }
 
-                    onWheel: {
-                        if (wheel.buttons == Qt.RightButton) {  // roll up to increase image size
-                            if((wheel.angleDelta.y > 0) && (magnification < 32)) aBinImageFile.setMagnification(magnification++)
-                            if((wheel.angleDelta.y < 0) && (magnification > 1)) aBinImageFile.setMagnification(magnification--)
-                        } else {
-                            playPause.reset()                   // play button is on left mouse button
-                            if (wheel.angleDelta.y > 0)
-                                aBinImageFile.forward()
-                            else if (wheel.angleDelta.y < 0)
-                                aBinImageFile.back()
+                        onFNameInfoChanged: fileNameInfo.text = fNameInfo
+                        onCtMinChanged: palette.min = ctMin
+                        onCtMaxChanged: palette.max = ctMax
+                        onStartFrameChanged: iPos.startFrame = startFrame
+                        onEndFrameChanged: iPos.endFrame = endFrame
+                        onCurrentFrameChanged: iPos.currentFrame = currentFrame
+                        onNFramesChanged: iPos.nFrames = nFrames
+                    }
+
+                    Label {
+                        id: fileNameInfo
+                        width: 200
+                        height: 30
+                        x: 2
+                        y: mainWindow.height - 116
+                        Text {
+                            text: ""
                         }
                     }
                 }
-
-                onCtMinChanged: {
-                    palette.min = ctMin
-                }
-
-                onCtMaxChanged: {
-                    palette.max = ctMax
-                }
-
-                onPlayModeChanged: {
-                }
-
-                onStartFrameChanged: {
-//                    console.log("updates S " + startFrame)
-                    iPos.startFrame = startFrame
-                }
-                onEndFrameChanged: {
-//                    console.log("updates E " + endFrame)
-                    iPos.endFrame = endFrame
-                }
-                onCurrentFrameChanged: {
-//                    console.log("updates C " + currentFrame)
-                    iPos.currentFrame = currentFrame
-                }
-                onNFramesChanged: {
-//                    console.log("updates N " + nFrames)
-                    iPos.nFrames = nFrames
-                }
-            }
 
             Palette {
                 id: palette
                 width: 70
                 height: mainWindow.height - 100
                 y: 0
-                x: mainWindow.width
+                x: 900
+                }
             }
-        }
+
+
 
         ImagePos {
             id: iPos
@@ -144,8 +141,8 @@ ApplicationWindow {
                 Image {source: "playback_begin.png"}
 
                 onClicked: {
-//                    console.log("begin button pressed")
                     aBinImageFile.begin()
+                    playPause.reset()
                 }
             }
 
@@ -216,8 +213,8 @@ ApplicationWindow {
                 Image {source: "playback_end.png"}
 
                 onClicked: {
-//                    console.log("end button pressed")
                     aBinImageFile.end()
+                    playPause.reset()
                 }
             }
 
