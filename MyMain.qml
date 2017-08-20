@@ -3,15 +3,18 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.0
 import QtQuick.Window 2.2
+
 import Readstuff 1.0
+import Displaystuff 1.0
 
 ApplicationWindow {
 
     id: mainWindow
     visible: true
 
-    width: Screen.width - 600
-    height: Screen.height - 200
+    width: Screen.width
+    height: Screen.height - 100
+    property alias imagesanstuff: imagesanstuff
     property int magnification: 20
     property string fNameInfo: ""
 
@@ -19,13 +22,17 @@ ApplicationWindow {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
     }
 
-
     title: qsTr("Player")
 
-        Row {
-            spacing: 5
+    Row {
+        x: 2
+        y: 0
+        width: parent.width
+
+        spacing: 5
 
             Column {
+                id: imagesanstuff
                     ReadImage {
                         id: aBinImageFile
                         x: 2
@@ -70,7 +77,7 @@ ApplicationWindow {
                         width: 200
                         height: 30
                         x: 2
-                        y: mainWindow.height - 116
+                        y: mainWindow.height - 156
                         Text {
                             text: ""
                         }
@@ -82,8 +89,24 @@ ApplicationWindow {
                 width: 70
                 height: mainWindow.height - 100
                 y: 0
-                x: 900
+                x: imagesanstuff.width - 70
                 }
+
+
+            ListView {
+                width: 100; height: 100
+                x: 800
+                y: 900
+
+                model: myModel
+                delegate: Rectangle {
+                    height: 25
+                    width: 100
+                    color: model.modelData.color
+                    Text { text: name }
+                }
+            }
+
             }
 
 
@@ -173,28 +196,7 @@ ApplicationWindow {
                 }
             }
 
-//            Button {
-//                width: 32
-//                height: 32
-//                Image {source: "playback_play.png"}
 
-//                onClicked: {
-//                    aBinImageFile.play()
-//                    timer.start()
-//                }
-//            }
-
-//            Button {
-//                width: 32
-//                height: 32
-//                Image {source: "playback_pause.png"}
-
-//                onClicked: {
-////                    console.log("pause button pressed")
-//                    timer.stop()
-//                    aBinImageFile.pause()
-//                }
-//            }
 
             Button {
                 width: 32
@@ -202,7 +204,6 @@ ApplicationWindow {
                 Image {source: "playback_ff.png"}
 
                 onClicked: {
-//                    console.log("forward button pressed")
                     aBinImageFile.forward()
                 }
             }
@@ -256,7 +257,7 @@ ApplicationWindow {
                     console.log("setting frame rate " + fRates.get(currentIndex).value)
 //                    timer.start()
                 }
-              }
+            }
 
             MyButton {
                 annunc: "Export"
@@ -288,7 +289,7 @@ ApplicationWindow {
                     ListElement { Xport: "as BMP"; value: 40 }
                     ListElement { Xport: "as AVI"; value: 20 }
                 }
-              }
+            }
 
 
             Label {

@@ -3,9 +3,11 @@ QT += qml quick
 CONFIG += c++11
 
 
-HEADERS += readimage.h
+HEADERS += readimage.h \
+    dataobject.h
 SOURCES += main.cpp \
-        readimage.cpp
+        readimage.cpp \
+    dataobject.cpp
 
 RESOURCES += qml.qrc
 

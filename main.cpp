@@ -1,9 +1,8 @@
 #include <QGuiApplication>
-//#include <QtQuick/QQuickView>
 #include <QQmlApplicationEngine>
 
 #include <readimage.h>
-
+#include <dataobject.h>
 
 
 
@@ -13,6 +12,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<ReadImage>("Readstuff", 1, 0, "ReadImage");
+    qmlRegisterType<DataObject>("Displaystuff", 1, 0, "DataObject");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QLatin1String("qrc:/MyMain.qml")));
@@ -20,10 +20,6 @@ int main(int argc, char *argv[])
 
 
 
-//    QQuickView view;
-//    view.setResizeMode(QQuickView::SizeRootObjectToView);
-//    view.setSource(QUrl("qrc:///main.qml"));
-//    view.show();
 
     return app.exec();
 }

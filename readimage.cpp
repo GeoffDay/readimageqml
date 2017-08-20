@@ -17,6 +17,7 @@
 #include <QStringBuilder>
 
 #include "readimage.h"
+#include <dataobject.h>
 
 #define IRANGE 4095                         // so far I'm assuming 12 bits for princeton and SPAD so far. Arf may be higher....
 
@@ -51,6 +52,13 @@ ReadImage::ReadImage(QQuickItem *parent)
        qApp->processEvents(QEventLoop::AllEvents);     // THIS KEEPS UI RESPONSIVE!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
        QString pixStr = "";
+
+       QList<QObject*> dataList;
+       dataList.append(new DataObject("Item 1", "red"));
+       dataList.append(new DataObject("Item 2", "green"));
+       dataList.append(new DataObject("Item 3", "blue"));
+       dataList.append(new DataObject("Item 4", "yellow"));
+
 }
 
 
@@ -60,6 +68,8 @@ void ReadImage::setCTType(bool cTType)
 {
     colourTableType = cTType;
     recalcColourTable(ctMin, ctMax);
+    redraw = 1;
+    timerTimeout();
 }
 
 
@@ -292,6 +302,14 @@ void ReadImage::getBinHeaderData()
 
     fNameandImagetype = QString("%1/%2  %3").arg(dirStr).arg(iFileName).arg(imageType);
     emit fNameInfoChanged(fNameandImagetype);
+
+
+//    QList<QObject*> dataList;
+//    dataList.append(new DataObject("Item 1", "red"));
+//    dataList.append(new DataObject("Item 2", "green"));
+//    dataList.append(new DataObject("Item 3", "blue"));
+//    dataList.append(new DataObject("Item 4", "yellow"));
+
 
     QImage image(iWidth * magnification, iHeight * magnification, QImage::Format_RGB32);
     image.fill(0xFF0606f0);
