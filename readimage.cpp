@@ -53,11 +53,6 @@ ReadImage::ReadImage(QQuickItem *parent)
 
        QString pixStr = "";
 
-       QList<QObject*> dataList;
-       dataList.append(new DataObject("Item 1", "red"));
-       dataList.append(new DataObject("Item 2", "green"));
-       dataList.append(new DataObject("Item 3", "blue"));
-       dataList.append(new DataObject("Item 4", "yellow"));
 
 }
 
@@ -304,11 +299,11 @@ void ReadImage::getBinHeaderData()
     emit fNameInfoChanged(fNameandImagetype);
 
 
-//    QList<QObject*> dataList;
-//    dataList.append(new DataObject("Item 1", "red"));
-//    dataList.append(new DataObject("Item 2", "green"));
-//    dataList.append(new DataObject("Item 3", "blue"));
-//    dataList.append(new DataObject("Item 4", "yellow"));
+    QList<QObject*> dataList;
+    dataList.append(new DataObject("Item 1", "red"));
+    dataList.append(new DataObject("Item 2", "green"));
+    dataList.append(new DataObject("Item 3", "blue"));
+    dataList.append(new DataObject("Item 4", "yellow"));
 
 
     QImage image(iWidth * magnification, iHeight * magnification, QImage::Format_RGB32);
@@ -596,12 +591,16 @@ void ReadImage::setCTMin(quint32 tCTMin)
 {
     ctMin = tCTMin;
     recalcColourTable(ctMin, ctMax);
+    redraw = 1;                 // only do this if paused
+    timerTimeout();
 }
 
 void ReadImage::setCTMax(quint32 tCTMax)
 {
     ctMax = tCTMax;
     recalcColourTable(ctMin, ctMax);
+    redraw = 1;                 // only do this if paused
+    timerTimeout();
 }
 
 quint32 ReadImage::getCTMin()

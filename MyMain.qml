@@ -5,7 +5,7 @@ import QtQuick.Dialogs 1.0
 import QtQuick.Window 2.2
 
 import Readstuff 1.0
-import Displaystuff 1.0
+import myModel 1.0
 
 ApplicationWindow {
 
@@ -25,8 +25,6 @@ ApplicationWindow {
     title: qsTr("Player")
 
     Row {
-        x: 2
-        y: 0
         width: parent.width
 
         spacing: 5
@@ -89,14 +87,16 @@ ApplicationWindow {
                 width: 70
                 height: mainWindow.height - 100
                 y: 0
-                x: imagesanstuff.width - 70
-                }
+                anchors.right: parent.right
+            }
 
 
             ListView {
+                id: listView
                 width: 100; height: 100
-                x: 800
-                y: 900
+                x: 1100
+                y: 600
+
 
                 model: myModel
                 delegate: Rectangle {
