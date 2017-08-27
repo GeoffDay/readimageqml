@@ -274,8 +274,8 @@ void ReadImage::getBinHeaderData()
         iHeight = 32;
         magnification = 20;
     } else {
-        fileVersion = quint32(*headerPtr + 18);
-        spadVersion = quint32(*headerPtr + 9);
+        fileVersion = quint32(*headerPtr + 2);
+        spadVersion = quint32(*headerPtr + 4);
         iWidth = quint32(*(headerPtr + 18));
         iHeight = quint32(*(headerPtr + 19));
 
@@ -295,15 +295,23 @@ void ReadImage::getBinHeaderData()
          }
     }
 
+    metaData.append(dirStr);
+    metaData.append(iFileName);
+    metaData.append(imageType);
+    metaData.append(QString::number(fileVersion, 10));
+    metaData.append(QString::number(spadVersion, 10));
+    metaData.append(QString::number(iWidth, 10));
+    metaData.append(QString::number(iHeight, 10));
+
     fNameandImagetype = QString("%1/%2  %3").arg(dirStr).arg(iFileName).arg(imageType);
     emit fNameInfoChanged(fNameandImagetype);
 
 
-    QList<QObject*> dataList;
-    dataList.append(new DataObject("Item 1", "red"));
-    dataList.append(new DataObject("Item 2", "green"));
-    dataList.append(new DataObject("Item 3", "blue"));
-    dataList.append(new DataObject("Item 4", "yellow"));
+//    QList<QObject*> dataList;
+//    dataList.append(new DataObject("Item 1", "red"));
+//    dataList.append(new DataObject("Item 2", "green"));
+//    dataList.append(new DataObject("Item 3", "blue"));
+//    dataList.append(new DataObject("Item 4", "yellow"));
 
 
     QImage image(iWidth * magnification, iHeight * magnification, QImage::Format_RGB32);
@@ -613,6 +621,15 @@ quint32 ReadImage::getCTMax()
     return ctMax;
 }
 
+QStringList ReadImage::getMetaData(){
+    return metaData;
+}
+
+
+//void ReadImage::setMetaData(QByteArray tHeader)
+//{
+
+//}
 
 
 void ReadImage::setAGCOn()

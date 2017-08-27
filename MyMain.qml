@@ -5,7 +5,7 @@ import QtQuick.Dialogs 1.0
 import QtQuick.Window 2.2
 
 import Readstuff 1.0
-import myModel 1.0
+//import myModel 1.0
 
 ApplicationWindow {
 
@@ -20,6 +20,7 @@ ApplicationWindow {
 
     onWindowStateChanged: {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
+         aBinImageFile.update()
     }
 
     title: qsTr("Player")
@@ -68,6 +69,7 @@ ApplicationWindow {
                         onEndFrameChanged: iPos.endFrame = endFrame
                         onCurrentFrameChanged: iPos.currentFrame = currentFrame
                         onNFramesChanged: iPos.nFrames = nFrames
+                        onMetaDataChanged: metaDataInfo.text = metaData
                     }
 
                     Label {
@@ -75,12 +77,38 @@ ApplicationWindow {
                         width: 200
                         height: 30
                         x: 2
-                        y: mainWindow.height - 156
+                        y: mainWindow.height - 186
                         Text {
                             text: ""
                         }
                     }
+                    Label {
+                        id: metaDataInfo
+                        width: 200
+                        height: 30
+                        x: 2
+                        y: mainWindow.height - 166
+                        Text {
+                            text: "meta"
+                        }
+                    }
                 }
+
+//            ListView {
+//                id: listView
+//                width: 100; height: 100
+//                x: 1100
+//                y: 600
+//                text: ""
+
+//                model: myModel
+//                delegate: Rectangle {
+//                                height: 25
+//                                width: 100
+
+//                                Text { ListView.model: 0 }
+//                          }
+//            }
 
             Palette {
                 id: palette
@@ -90,24 +118,7 @@ ApplicationWindow {
                 anchors.right: parent.right
             }
 
-
-            ListView {
-                id: listView
-                width: 100; height: 100
-                x: 1100
-                y: 600
-
-
-                model: myModel
-                delegate: Rectangle {
-                    height: 25
-                    width: 100
-                    color: model.modelData.color
-                    Text { text: name }
-                }
-            }
-
-            }
+        }
 
 
 
@@ -196,8 +207,6 @@ ApplicationWindow {
                 }
             }
 
-
-
             Button {
                 width: 32
                 height: 32
@@ -255,7 +264,6 @@ ApplicationWindow {
                 onActivated: {
                     timer.interval = fRates.get(currentIndex).value
                     console.log("setting frame rate " + fRates.get(currentIndex).value)
-//                    timer.start()
                 }
             }
 
@@ -299,13 +307,11 @@ ApplicationWindow {
                 font.pixelSize: 32 * 5/8
                 verticalAlignment: Text.AlignVCenter
                 background: Rectangle {
-                              color: "#8688ca"
-                              border.color: "#76782a"
-                              border.width: 1
-                }
+                                  color: "#8688ca"
+                                  border.color: "#76782a"
+                                  border.width: 1
+                            }
             }
-
-
 
             SpinBox {
                  id: spinbox
@@ -320,10 +326,10 @@ ApplicationWindow {
                  font.pointSize: 16
 
                  background: Rectangle {
-                               color: "#8688ca"
-                               border.color: "#76782a"
-                               border.width: 1
-                 }
+                                   color: "#8688ca"
+                                   border.color: "#76782a"
+                                   border.width: 1
+                             }
 
                  property int decimals: 3
                  property real realValue: value / 1000
@@ -354,10 +360,7 @@ ApplicationWindow {
             aBinImageFile.timerTimeout()
             aBinImageFile.update()
         }
-
     }
-
-
 
     FileDialog {
         id: fileDialog
@@ -368,15 +371,13 @@ ApplicationWindow {
             console.log("You chose: " + fileDialog.fileUrls)
             aBinImageFile.openIFileName(fileDialog.fileUrls)
             timer.start()
-
         }
+
         onRejected: {
             console.log("Cancelled")
             Qt.quit()
         }
 
         Component.onCompleted: visible = false
-    }
-
-    
+    }    
 }
