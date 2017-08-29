@@ -12,9 +12,10 @@ ApplicationWindow {
     id: mainWindow
     visible: true
 
-    width: Screen.width
+    width: Screen.width - 500
     height: Screen.height - 100
-    property alias imagesanstuff: imagesanstuff
+
+//    property alias imagesanstuff: imagesanstuff
     property int magnification: 20
     property string fNameInfo: ""
 
@@ -25,99 +26,84 @@ ApplicationWindow {
 
     title: qsTr("Player")
 
-    Row {
-        width: parent.width
+//            Column {
+//                id: imagesanstuff
 
+    Row {
+        id: toprow
         spacing: 5
 
-            Column {
-                id: imagesanstuff
-                    ReadImage {
-                        id: aBinImageFile
-                        x: 2
-                        y: 2
-                        width: 1000; height: 1000
+                ReadImage {
+                    id: aBinImageFile
+                    width: 1000
+                    height: 1000
 
-                        MouseArea {
-                            id: mouseArea
-                            anchors.fill: parent
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-                            onClicked: {
-                                if (mouse.button == Qt.LeftButton)      // click to pause or play
-                                        playPause.toggle()
-                                }
+                        onClicked: {
+                            if (mouse.button == Qt.LeftButton)      // click to pause or play
+                                    playPause.toggle()
+                            }
 
-                            onWheel: {
-                                if (wheel.buttons == Qt.RightButton) {  // roll up to increase image size
-                                    if((wheel.angleDelta.y > 0) && (magnification < 32)) aBinImageFile.setMagnification(magnification++)
-                                    if((wheel.angleDelta.y < 0) && (magnification > 1)) aBinImageFile.setMagnification(magnification--)
-                                } else {
-                                    playPause.reset()                   // play button is on left mouse button
-                                    if (wheel.angleDelta.y > 0)
-                                        aBinImageFile.forward()
-                                    else if (wheel.angleDelta.y < 0)
-                                        aBinImageFile.back()
-                                }
+                        onWheel: {
+                            if (wheel.buttons == Qt.RightButton) {  // roll up to increase image size
+                                if((wheel.angleDelta.y > 0) && (magnification < 32)) aBinImageFile.setMagnification(magnification++)
+                                if((wheel.angleDelta.y < 0) && (magnification > 1)) aBinImageFile.setMagnification(magnification--)
+                            } else {
+                                playPause.reset()                   // play button is on left mouse button
+                                if (wheel.angleDelta.y > 0)
+                                    aBinImageFile.forward()
+                                else if (wheel.angleDelta.y < 0)
+                                    aBinImageFile.back()
                             }
                         }
-
-                        onFNameInfoChanged: fileNameInfo.text = fNameInfo
-                        onCtMinChanged: palette.min = ctMin
-                        onCtMaxChanged: palette.max = ctMax
-                        onStartFrameChanged: iPos.startFrame = startFrame
-                        onEndFrameChanged: iPos.endFrame = endFrame
-                        onCurrentFrameChanged: iPos.currentFrame = currentFrame
-                        onNFramesChanged: iPos.nFrames = nFrames
-                        onMetaDataChanged: metaDataInfo.text = metaData
                     }
 
-                    Label {
-                        id: fileNameInfo
-                        width: 200
-                        height: 30
-                        x: 2
-                        y: mainWindow.height - 186
-                        Text {
-                            text: ""
-                        }
-                    }
-                    Label {
-                        id: metaDataInfo
-                        width: 200
-                        height: 30
-                        x: 2
-                        y: mainWindow.height - 166
-                        Text {
-                            text: "meta"
-                        }
-                    }
+//                    onFNameInfoChanged: fileNameInfo.text = fNameInfo
+                    onCtMinChanged: palette.min = ctMin
+                    onCtMaxChanged: palette.max = ctMax
+                    onStartFrameChanged: iPos.startFrame = startFrame
+                    onEndFrameChanged: iPos.endFrame = endFrame
+                    onCurrentFrameChanged: iPos.currentFrame = currentFrame
+                    onNFramesChanged: iPos.nFrames = nFrames
+                    onMetaDataChanged: metaDataa.myModel = metaData
                 }
 
-//            ListView {
-//                id: listView
-//                width: 100; height: 100
-//                x: 1100
-//                y: 600
-//                text: ""
 
-//                model: myModel
-//                delegate: Rectangle {
-//                                height: 25
-//                                width: 100
+            Item {
+                id: metaDataa
+                width: 100
+                height: 100
 
-//                                Text { ListView.model: 0 }
-//                          }
+                ListModel {
+                    id: myModel
+                    ListElement { name: "Dog"; colour: "green" }
+                    ListElement { name: "Cat"; colour: "red" }
+                }
+
+                Component {
+                    id: myDelegate
+                     Text {text: name + ", " + colour}
+                }
+
+                ListView {
+                    anchors.fill: parent
+                    model: myModel
+                    delegate: myDelegate
+                }
+            }
+
+
 //            }
 
             Palette {
                 id: palette
                 width: 70
                 height: mainWindow.height - 100
-                y: 0
-                anchors.right: parent.right
             }
-
         }
 
 

@@ -11,6 +11,7 @@
 #include <QBasicTimer>
 #include <QWheelEvent>
 
+#include <dataobject.h>
 
 #include <QtQuick/QQuickPaintedItem>
 
@@ -27,7 +28,7 @@ class ReadImage : public QQuickPaintedItem
     Q_PROPERTY(quint32 ctMin READ getCTMin WRITE setCTMin NOTIFY ctMinChanged)
     Q_PROPERTY(quint32 ctMax READ getCTMax WRITE setCTMax NOTIFY ctMaxChanged)
     Q_PROPERTY(bool colourTableType READ getCTMax WRITE setCTType NOTIFY ctTypeChanged)
-    Q_PROPERTY(QStringList metaData READ getMetaData NOTIFY metaDataChanged)
+    Q_PROPERTY(QList<QObject *> metaData READ getMetaData NOTIFY metaDataChanged)
 
     Q_PROPERTY(quint32 magnification READ getMagnification WRITE setMagnification)
     Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
@@ -52,7 +53,7 @@ public:
     Q_INVOKABLE void setCTType(bool);
     Q_INVOKABLE void setAGCOn();
     Q_INVOKABLE void setAGCOff();
-    Q_INVOKABLE QStringList getMetaData();
+    Q_INVOKABLE QList<QObject *> getMetaData();
 //    Q_INVOKABLE void setMetaData(QStringList);
 
 
@@ -88,7 +89,7 @@ private slots:
     void recalcColourTable(quint16, quint16);
 
 signals:
-    void metaDataChanged(QStringList metaData);
+    void metaDataChanged(QList<QObject*> metaData);
     void currentFrameChanged(quint32 currFrame);
     void startFrameChanged(quint32 startFrame);
     void endFrameChanged(quint32 endFrame);
@@ -105,9 +106,10 @@ signals:
 
 
 private:
+    QList<QObject *> metaData;
     QImage image;
     QFile file, exportFile;
-    QStringList iFileList, metaData;
+    QStringList iFileList;
     QString pixStr, imageType, fNameandImagetype;
     QString dirStr, iFileName, iExt, exportFileName;
     quint32 iWidth, iHeight,totalPixels, xPos, yPos;
