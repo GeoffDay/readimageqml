@@ -68,8 +68,6 @@ ApplicationWindow {
                     onNFramesChanged: iPos.nFrames = nFrames
                     onModelChanged: {
                         console.log("someything changed" + aBinImageFile.model)
-
-
                     }
                 }
 
@@ -78,10 +76,6 @@ ApplicationWindow {
                 width: 220
                 height: 600
 
-//                Text {
-//                    font.pointSize: 18
-//                    text: aBinImageFile.model
-//                }
                 ListView {
                     anchors.fill: parent
                     model: aBinImageFile.model
@@ -93,39 +87,15 @@ ApplicationWindow {
                                           font.pointSize: 18
                                           text: modelData
                                       }
-
                                   }
                 }
             }
-//            Item {                            this worked on local data. how do I change this model?
-//                id: metaDataa
-//                width: 100
-//                height: 100
 
-//                ListModel {
-//                    id: myModel
-//                    ListElement { name: "Dog"; colour: "green" }
-//                    ListElement { name: "Cat"; colour: "red" }
-//                }
-
-//                Component {
-//                    id: myDelegate
-//                     Text {text: name + ", " + colour}
-//                }
-
-//                ListView {
-//                    anchors.fill: parent
-//                    model: myModel
-//                    delegate: myDelegate
-//                }
-//            }
 
                 Label {
                     id: fileNameInfo
                     width: 200
                     height: 30
-//                    x: 2
-//                    y: mainWindow.height - 156
                     Text {
                         text: "-"
                     }

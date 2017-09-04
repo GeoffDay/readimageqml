@@ -60,6 +60,15 @@ void ReadImage::setModel(QString m) {
   modelChanged();
 }
 
+
+
+void ReadImage::setModel(QStringList m) {
+    m_model = m;
+    modelChanged();
+}
+
+
+
 QStringList ReadImage::getModel() {
     return m_model;
 }
@@ -301,13 +310,15 @@ void ReadImage::getBinHeaderData()
     }
 
     setModel("the quick brown fox jumped");
-    metaData.append(dirStr);
-    metaData.append(iFileName);
-    metaData.append(imageType);
-    metaData.append(QString::number(fileVersion, 10));
-//    metaData.append(QString::number(spadVersion, 10));
-//    metaData.append(QString::number(iWidth, 10));
-//    metaData.append(QString::number(iHeight, 10));
+    metaData.clear();
+    metaData.append("Dir: " + dirStr);
+    metaData.append("File : " + iFileName);
+    metaData.append("Image Type: " + imageType);
+    metaData.append("File Version: " + QString::number(fileVersion, 10));
+    metaData.append("SPAD Version: " + QString::number(spadVersion, 10));
+    metaData.append("Resolution: " + QString::number(iWidth, 10) + " x " + QString::number(iHeight, 10));
+
+    setModel(metaData);
 
     fNameandImagetype = QString("%1/%2  %3").arg(dirStr).arg(iFileName).arg(imageType);
     emit fNameInfoChanged(fNameandImagetype);

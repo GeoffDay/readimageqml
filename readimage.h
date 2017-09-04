@@ -40,6 +40,7 @@ public:
 
     QStringList m_model;
     Q_INVOKABLE void setModel(QString m);
+    Q_INVOKABLE void setModel(QStringList m);
     Q_INVOKABLE QStringList getModel();
 
     QStringList listIFiles(QString aFileName);            // for next and prev file buttons
