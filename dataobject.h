@@ -30,3 +30,40 @@ private:
 };
 
 #endif // DATAOBJECT_H
+
+
+//// the equivalent of your SearchClass
+//class Test : public QObject {
+//    Q_OBJECT
+//    Q_PROPERTY(QStringList model MEMBER m_model NOTIFY modelChanged)
+//    QStringList m_model;
+//  public slots:
+//    void setModel(QString m) {
+//      m_model = m.split(" ");
+//      modelChanged();
+//    }
+//  signals:
+//    void modelChanged();
+//};
+
+//// in main.cpp
+//  Test t;
+//  engine.rootContext()->setContextProperty("Test", &t);
+
+//// in main.qml
+//Column {
+//    TextField {
+//      onTextChanged: Test.setModel(text)
+//    }
+//    ListView {
+//      width: 200; height: 300
+//      spacing: 5
+//      model: Test.model
+//      delegate: Rectangle {
+//        height: 25
+//        width: 200
+//        color: "lightgray"
+//        Text { text: modelData; anchors.centerIn: parent }
+//      }
+//    }
+//  }

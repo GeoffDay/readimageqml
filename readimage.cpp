@@ -52,18 +52,17 @@ ReadImage::ReadImage(QQuickItem *parent)
        qApp->processEvents(QEventLoop::AllEvents);     // THIS KEEPS UI RESPONSIVE!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
        QString pixStr = "";
-
-//       QList<QObject*> dataList;
-       metaData.append(new DataObject("Item 1", "red"));
-       metaData.append(new DataObject("Item 2zdfasf", "green"));
-       metaData.append(new DataObject("Item 3", "blue"));
-       metaData.append(new DataObject("Item 4", "yellow"));
-
-
 }
 
 
+void ReadImage::setModel(QString m) {
+  m_model = m.split(" ");
+  modelChanged();
+}
 
+QStringList ReadImage::getModel() {
+    return m_model;
+}
 
 void ReadImage::setCTType(bool cTType)
 {
@@ -301,11 +300,11 @@ void ReadImage::getBinHeaderData()
          }
     }
 
-    metaData.append(new DataObject(dirStr, "red"));
-//    metaData.append(dirStr);
-//    metaData.append(iFileName);
-//    metaData.append(imageType);
-//    metaData.append(QString::number(fileVersion, 10));
+    setModel("the quick brown fox jumped");
+    metaData.append(dirStr);
+    metaData.append(iFileName);
+    metaData.append(imageType);
+    metaData.append(QString::number(fileVersion, 10));
 //    metaData.append(QString::number(spadVersion, 10));
 //    metaData.append(QString::number(iWidth, 10));
 //    metaData.append(QString::number(iHeight, 10));
@@ -620,7 +619,7 @@ quint32 ReadImage::getCTMax()
     return ctMax;
 }
 
-QList<QObject*> ReadImage::getMetaData(){
+QStringList ReadImage::getMetaData(){
     return metaData;
 }
 

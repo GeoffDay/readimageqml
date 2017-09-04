@@ -15,7 +15,6 @@ ApplicationWindow {
     width: Screen.width - 500
     height: Screen.height - 100
 
-//    property alias imagesanstuff: imagesanstuff
     property int magnification: 20
     property string fNameInfo: ""
 
@@ -26,8 +25,6 @@ ApplicationWindow {
 
     title: qsTr("Player")
 
-//            Column {
-//                id: imagesanstuff
 
     Row {
         id: toprow
@@ -35,8 +32,8 @@ ApplicationWindow {
 
                 ReadImage {
                     id: aBinImageFile
-                    width: 1000
-                    height: 1000
+                    width: 800
+                    height: 800
 
                     MouseArea {
                         id: mouseArea
@@ -62,43 +59,77 @@ ApplicationWindow {
                         }
                     }
 
-//                    onFNameInfoChanged: fileNameInfo.text = fNameInfo
+                    onFNameInfoChanged: fileNameInfo.text = fNameInfo
                     onCtMinChanged: palette.min = ctMin
                     onCtMaxChanged: palette.max = ctMax
                     onStartFrameChanged: iPos.startFrame = startFrame
                     onEndFrameChanged: iPos.endFrame = endFrame
                     onCurrentFrameChanged: iPos.currentFrame = currentFrame
                     onNFramesChanged: iPos.nFrames = nFrames
-                    onMetaDataChanged: metaDataa.myModel = metaData
+                    onModelChanged: {
+                        console.log("someything changed" + aBinImageFile.model)
+
+
+                    }
                 }
 
-
-            Item {
+            Item {                  //  this worked on a datalist in Main. How to change main tho'
                 id: metaDataa
-                width: 100
-                height: 100
+                width: 220
+                height: 600
 
-                ListModel {
-                    id: myModel
-                    ListElement { name: "Dog"; colour: "green" }
-                    ListElement { name: "Cat"; colour: "red" }
-                }
-
-                Component {
-                    id: myDelegate
-                     Text {text: name + ", " + colour}
-                }
-
+//                Text {
+//                    font.pointSize: 18
+//                    text: aBinImageFile.model
+//                }
                 ListView {
                     anchors.fill: parent
-                    model: myModel
-                    delegate: myDelegate
+                    model: aBinImageFile.model
+                    delegate: Rectangle {
+                                      height: 35
+                                      width: 220
+//                                      color: "black"
+                                      Text {
+                                          font.pointSize: 18
+                                          text: modelData
+                                      }
+
+                                  }
                 }
             }
+//            Item {                            this worked on local data. how do I change this model?
+//                id: metaDataa
+//                width: 100
+//                height: 100
 
+//                ListModel {
+//                    id: myModel
+//                    ListElement { name: "Dog"; colour: "green" }
+//                    ListElement { name: "Cat"; colour: "red" }
+//                }
 
+//                Component {
+//                    id: myDelegate
+//                     Text {text: name + ", " + colour}
+//                }
+
+//                ListView {
+//                    anchors.fill: parent
+//                    model: myModel
+//                    delegate: myDelegate
+//                }
 //            }
 
+                Label {
+                    id: fileNameInfo
+                    width: 200
+                    height: 30
+//                    x: 2
+//                    y: mainWindow.height - 156
+                    Text {
+                        text: "-"
+                    }
+}
             Palette {
                 id: palette
                 width: 70
