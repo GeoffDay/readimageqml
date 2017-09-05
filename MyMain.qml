@@ -5,12 +5,13 @@ import QtQuick.Dialogs 1.0
 import QtQuick.Window 2.2
 
 import Readstuff 1.0
-//import myModel 1.0
 
 ApplicationWindow {
 
     id: mainWindow
     visible: true
+
+    title: "Bin Player"
 
     width: Screen.width - 500
     height: Screen.height - 100
@@ -23,7 +24,6 @@ ApplicationWindow {
          aBinImageFile.update()
     }
 
-    title: qsTr("Player")
 
 
     Row {
@@ -39,6 +39,13 @@ ApplicationWindow {
                         id: mouseArea
                         anchors.fill: parent
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        hoverEnabled: true
+
+                        onMouseXChanged: {
+//                              mouseX = mouse.x;
+//                              mouseY = mouse.y;
+                              aBinImageFile.setMousePos(mouse.x, mouse.y)
+                          }
 
                         onClicked: {
                             if (mouse.button == Qt.LeftButton)      // click to pause or play
@@ -71,35 +78,57 @@ ApplicationWindow {
                     }
                 }
 
-            Item {                  //  this worked on a datalist in Main. How to change main tho'
-                id: metaDataa
-                width: 220
-                height: 600
+            Column {
+                Item {                  //  this worked on a datalist in Main. How to change main tho'
+                    id: metaDataa
+                    width: 220
+                    height: 600
 
-                ListView {
-                    anchors.fill: parent
-                    model: aBinImageFile.model
-                    delegate: Rectangle {
-                                      height: 35
-                                      width: 220
-//                                      color: "black"
-                                      Text {
-                                          font.pointSize: 18
-                                          text: modelData
+                    ListView {
+                        anchors.fill: parent
+                        model: aBinImageFile.model
+                        delegate: Rectangle {
+                                          height: 35
+                                          width: 220
+    //                                      color: "black"
+                                          Text {
+                                              font.pointSize: 16
+                                              text: modelData
+                                          }
                                       }
-                                  }
-                }
-            }
-
-
-                Label {
-                    id: fileNameInfo
-                    width: 200
-                    height: 30
-                    Text {
-                        text: "-"
                     }
-}
+                }
+                Item {                  //  this worked on a datalist in Main. How to change main tho'
+                    id: metaDatab
+                    width: 220
+                    height: 600
+
+                    ListView {
+                        anchors.fill: parent
+                        model: aBinImageFile.fastModel
+                        delegate: Rectangle {
+                            height: 35
+                            width: 220
+                            color: "yellow"
+                            Text {
+                                font.pointSize: 16
+                                text: modelData
+                            }
+                        }
+                    }
+                }
+             }
+
+
+//                Label {
+//                    id: fileNameInfo
+//                    width: 200
+//                    height: 30
+//                    Text {
+//                        text: "-"
+//                    }
+//                }
+
             Palette {
                 id: palette
                 width: 70

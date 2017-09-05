@@ -55,10 +55,10 @@ ReadImage::ReadImage(QQuickItem *parent)
 }
 
 
-void ReadImage::setModel(QString m) {
-  m_model = m.split(" ");
-  modelChanged();
-}
+//void ReadImage::setModel(QString m) {
+//  m_model = m.split(" ");
+//  modelChanged();
+//}
 
 
 
@@ -67,10 +67,19 @@ void ReadImage::setModel(QStringList m) {
     modelChanged();
 }
 
+void ReadImage::setFastModel(QStringList m) {
+    n_model = m;
+    fastModelChanged();
+}
+
 
 
 QStringList ReadImage::getModel() {
     return m_model;
+}
+
+QStringList ReadImage::getFastModel() {
+    return n_model;
 }
 
 void ReadImage::setCTType(bool cTType)
@@ -309,7 +318,6 @@ void ReadImage::getBinHeaderData()
          }
     }
 
-    setModel("the quick brown fox jumped");
     metaData.clear();
     metaData.append("Dir: " + dirStr);
     metaData.append("File : " + iFileName);
@@ -399,6 +407,9 @@ int ReadImage::getBinImage(int rdrw, int frame)
             if (pixelPos == i){
                 double sColour = tColour * pixelScale;
                 pixStr = QString(" %1, %2, %3 ").arg(xPos,0,10,QChar(' ')).arg(yPos,0,10,QChar(' ')).arg(sColour, 0, 'f', 1, QChar(' '));
+                fastMetaData.append(pixStr);
+                setFastModel(fastMetaData);
+                fastMetaData.clear();
             }
         }
 
@@ -502,6 +513,15 @@ void ReadImage::timerTimeout()
 }
 
 
+void ReadImage::setMousePos(int mX, int mY)
+{
+    xPos = mX / magnification;
+    yPos = mY / magnification;
+    qDebug() << "xy" << xPos << yPos;
+    redraw = 1;
+    timerTimeout();
+}
+
 
 
 QString ReadImage::IFileName() const
@@ -512,7 +532,7 @@ QString ReadImage::IFileName() const
 
 void ReadImage::paint(QPainter *painter)
 {
-    QRect dirtyRect = QRect(0,0,iWidth * magnification,(iHeight + 1) * magnification);
+    QRect dirtyRect = QRect(0,0,iWidth * magnification,(iHeight + 0) * magnification);
     painter->drawImage(dirtyRect, image);
 
 //    qDebug() << "in paintevent" << iWidth << iHeight << magnification;

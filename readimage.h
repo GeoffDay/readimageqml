@@ -20,6 +20,7 @@ class ReadImage : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QStringList model MEMBER m_model READ getModel NOTIFY modelChanged)
+    Q_PROPERTY(QStringList fastModel MEMBER n_model READ getFastModel NOTIFY fastModelChanged)
 
     Q_PROPERTY(QString fNameInfo READ fName NOTIFY fNameInfoChanged)
     Q_PROPERTY(quint32 nFrames READ nFrames NOTIFY nFramesChanged)
@@ -30,7 +31,6 @@ class ReadImage : public QQuickPaintedItem
     Q_PROPERTY(quint32 ctMin READ getCTMin WRITE setCTMin NOTIFY ctMinChanged)
     Q_PROPERTY(quint32 ctMax READ getCTMax WRITE setCTMax NOTIFY ctMaxChanged)
     Q_PROPERTY(bool colourTableType READ getCTMax WRITE setCTType NOTIFY ctTypeChanged)
-//    Q_PROPERTY(QStringList metaData READ getMetaData NOTIFY metaDataChanged)
 
     Q_PROPERTY(quint32 magnification READ getMagnification WRITE setMagnification)
     Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
@@ -38,10 +38,12 @@ class ReadImage : public QQuickPaintedItem
 public:
     ReadImage(QQuickItem *parent = 0);
 
-    QStringList m_model;
-    Q_INVOKABLE void setModel(QString m);
+    QStringList m_model, n_model;
+    Q_INVOKABLE void setFastModel(QStringList m);
     Q_INVOKABLE void setModel(QStringList m);
     Q_INVOKABLE QStringList getModel();
+    Q_INVOKABLE QStringList getFastModel();
+    Q_INVOKABLE void setMousePos(int mX, int mY);
 
     QStringList listIFiles(QString aFileName);            // for next and prev file buttons
     Q_INVOKABLE bool openIFileName(QString);
@@ -61,7 +63,6 @@ public:
     Q_INVOKABLE void setAGCOn();
     Q_INVOKABLE void setAGCOff();
     Q_INVOKABLE QStringList getMetaData();
-//    Q_INVOKABLE void setMetaData(QStringList);
 
     Q_INVOKABLE QString fName();
 
@@ -96,7 +97,7 @@ private slots:
 
 signals:
     void modelChanged();
-//    void metaDataChanged(QStringList metaData);
+    void fastModelChanged();
     void currentFrameChanged(quint32 currFrame);
     void startFrameChanged(quint32 startFrame);
     void endFrameChanged(quint32 endFrame);
@@ -115,7 +116,7 @@ signals:
 private:
     QImage image;
     QFile file, exportFile;
-    QStringList iFileList, metaData;
+    QStringList iFileList, metaData, fastMetaData;
     QString pixStr, imageType, fNameandImagetype;
     QString dirStr, iFileName, iExt, exportFileName;
     quint32 iWidth, iHeight,totalPixels, xPos, yPos;
