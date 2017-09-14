@@ -42,8 +42,6 @@ ApplicationWindow {
                         hoverEnabled: true
 
                         onMouseXChanged: {
-//                              mouseX = mouse.x;
-//                              mouseY = mouse.y;
                               aBinImageFile.setMousePos(mouse.x, mouse.y)
                           }
 
@@ -81,7 +79,7 @@ ApplicationWindow {
             Column {
                 Item {                  //  this worked on a datalist in Main. How to change main tho'
                     id: metaDataa
-                    width: 220
+                    width: 520
                     height: 600
 
                     ListView {

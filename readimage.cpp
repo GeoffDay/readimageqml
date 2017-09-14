@@ -55,12 +55,6 @@ ReadImage::ReadImage(QQuickItem *parent)
 }
 
 
-//void ReadImage::setModel(QString m) {
-//  m_model = m.split(" ");
-//  modelChanged();
-//}
-
-
 
 void ReadImage::setModel(QStringList m) {
     m_model = m;
@@ -92,7 +86,6 @@ void ReadImage::setCTType(bool cTType)
 
 
 
-
 void ReadImage::recalcColourTable(quint16 min, quint16 max)
 {
     if (min >= max) {        //this is an error
@@ -105,8 +98,8 @@ void ReadImage::recalcColourTable(quint16 min, quint16 max)
         if (max < IRANGE) {max += 1;}
     }
 
-    emit ctMinChanged(ctMin);
-    emit ctMaxChanged(ctMax);
+    emit ctMinChanged();
+    emit ctMaxChanged();
 
     if (colourTableType) {
         genLCIIColourTable(min, max);
@@ -335,7 +328,7 @@ void ReadImage::getBinHeaderData()
     image.fill(0xFF0606f0);
 
     numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
-    emit nFramesChanged(numberOfFrames);        //set our number of frames to the widget
+    emit nFramesChanged();        //set our number of frames to the widget
 
     qDebug() << "imageType " << imageType << spadVersion << iWidth << iHeight << numberOfFrames;
 
@@ -351,13 +344,13 @@ void ReadImage::getBinHeaderData()
     imageMax = quint16(4095 * pixelScale);
 
     startFrame = 1;                     //setup arfpos.qml values
-    emit startFrameChanged(startFrame);
+    emit startFrameChanged();
 
     endFrame = numberOfFrames;
-    emit endFrameChanged(endFrame);
+    emit endFrameChanged();
 
     currentFrame = 1;
-    emit currentFrameChanged(currentFrame);
+    emit currentFrameChanged();
 
     redraw = 1;                         // 1 redraws current frame
 
@@ -381,7 +374,7 @@ int ReadImage::getBinImage(int rdrw, int frame)
 
     if ((rdrw > 0) && file.isOpen()) {
         rdrw--;
-        emit currentFrameChanged((quint32)(frame));     // shows us where we are in the file
+        emit currentFrameChanged();     // shows us where we are in the file
         quint32 pixelPos = (xPos + (yPos * iWidth));    //calculate memory location of the pixel
         quint16 histValue;
 
@@ -463,13 +456,13 @@ int ReadImage::getBinImage(int rdrw, int frame)
 
         if (AGC && (abs(quint16(imageMin - ctMin)) > 2)){
             setCTMin(imageMin);
-            emit ctMinChanged(imageMin);
+            emit ctMinChanged();
 //            recalcColourTable(ctMin, ctMax);
         }
 
         if (AGC && (abs(quint16(imageMax - ctMax)) > 2)){
             setCTMax(imageMax);
-            emit ctMaxChanged(imageMax);}
+            emit ctMaxChanged();}
 //            recalcColourTable(ctMin, ctMax);
         }
 
@@ -601,13 +594,11 @@ void ReadImage::setCurrentFrame(int tCFrame)
 
 void ReadImage::setStartFrame(int tSFrame)
 {
-//    qDebug() << "hello from set start frame" << startFrame;
     startFrame = tSFrame;
 }
 
 void ReadImage::setEndFrame(int tEFrame)
 {
-//    qDebug() << "hello from set end frame" << endFrame;
     endFrame = tEFrame;
 }
 

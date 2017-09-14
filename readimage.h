@@ -98,18 +98,18 @@ private slots:
 signals:
     void modelChanged();
     void fastModelChanged();
-    void currentFrameChanged(quint32 currFrame);
-    void startFrameChanged(quint32 startFrame);
-    void endFrameChanged(quint32 endFrame);
-    void nFramesChanged(quint32 numberOfFrames);
+    void currentFrameChanged();
+    void startFrameChanged();
+    void endFrameChanged();
+    void nFramesChanged();
     void newHistogram(QVector<quint32>);
     void newColourTable(QVector<QRgb>);
 //    void newImageLimits(QPoint(int, int));
     void fNameInfoChanged(QString);
     void playModeChanged(bool);
     void ctTypeChanged(bool);
-    void ctMinChanged(quint32 ctMin);
-    void ctMaxChanged(quint32 ctMax);
+    void ctMinChanged();
+    void ctMaxChanged();
     void agcState(bool);
 
 
