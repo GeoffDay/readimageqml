@@ -459,6 +459,49 @@ void ReadImage::getBinHeaderData()
 }
 
 
+void ReadImage::getFastBinHeaderData(QByteArray baFastHeader)
+{
+    // This is the stuff that changes frame by frame
+
+    fastMetaData.clear();
+    quint16 *headerPtr = reinterpret_cast<quint16 *>(baFastHeader.data());  // create a pointer to that bytearray and
+
+    if (*headerPtr == 0x55AA) {                                                   // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
+        quint32 frameNum  = quint32(*(headerPtr + 1)) + quint32(*(headerPtr + 2) << 16);    // col 2, bytes 2, 3, 4 & 5 frame number
+        quint16 totHits         = *(headerPtr + 5);                                 // col 6, bytes 10, 11 total hits
+        quint16 earlyFExc       = *(headerPtr + 6);                                 // col 7, bytes 12, 13 early fire exclusions
+        quint16 termCountExc    = *(headerPtr + 7);                                 // col 8, bytes 14, 15 terminal count exclusions
+        quint16 framePeriod     = *(headerPtr + 12);                                 // col 21, bytes 40, 41 frame period,
+
+        fastMetaData.append(QString("Frame Number: %1 ").arg(frameNum));
+        fastMetaData.append(QString("Total Hits: %1").arg(totHits));
+        fastMetaData.append(QString("Early Fire Exclusions: %1").arg(earlyFExc));
+        fastMetaData.append(QString("Terminal Count Exclusions: %1").arg(termCountExc));
+        fastMetaData.append(QString("Frame Period: %1ns").arg(framePeriod));
+    } else {
+        // Dennis' SPADs
+        quint32 timeStamp        = quint32(*(headerPtr + 5)) + quint32((*(headerPtr + 1)) << 16);   // col 3, bytes 4, 5 frame number
+//        quint32 timeNsStamp      = quint32(*(headerPtr + 7)) + quint32((*(headerPtr + 1)) << 16);   // col 3, bytes 4, 5 frame number
+        quint16 spadPLL          = *(headerPtr + 11);
+        quint16 delay            = *(headerPtr + 12);
+        quint16 window           = *(headerPtr + 13);
+        quint32 frameCount       = quint32(*(headerPtr + 12)) + quint32((*(headerPtr + 13)) << 16);   // col 3, bytes 4, 5 frame number
+        quint32 frameInt         = quint32(*(headerPtr + 17)) + quint32((*(headerPtr + 18)) << 16);   // col 3, bytes 4, 5 frame number
+
+        QDateTime UTC(QDateTime::fromTime_t(timeStamp));
+
+        fastMetaData.append(QString("Time %1").arg(UTC.toString("d MMM yyyy hh:mm:ss")));
+        fastMetaData.append(QString("Frame Number: %1 ").arg(frameCount));
+        if (spadPLL){
+        fastMetaData.append(QString("Delay: %1 clocks (%2m)").arg(delay).arg(delay * SPEEDOFLIGHT / spadPLL / 2));
+        fastMetaData.append(QString("Window: %1 clocks (%2m)").arg(window).arg(window * SPEEDOFLIGHT / spadPLL / 2));
+        }
+        fastMetaData.append(QString("Frame Interval: %1++s (%2Hz)").arg(frameInt * 10E-09).arg(1/double(frameInt * 10E-09)));
+    }
+}
+
+
+
 
 int ReadImage::getBinImage(int rdrw, int frame)
 {
@@ -480,6 +523,7 @@ int ReadImage::getBinImage(int rdrw, int frame)
         quint32 seekPos = (((iWidth * iHeight) + iWidth) * 2 * (frame - 1));
         file.seek(seekPos);
         baHeader = file.read(iWidth * 2);
+        getFastBinHeaderData(baHeader);
         baImage = file.read(iWidth * iHeight * 2);      // read 1 frame to a bytearray
         baImageR = baImage;
         quint16 *imagePtr = reinterpret_cast<quint16 *>(baImage.data());   // create a pointer to that bytearray and
@@ -501,7 +545,6 @@ int ReadImage::getBinImage(int rdrw, int frame)
                 pixStr = QString(" %1, %2, %3 ").arg(xPos,0,10,QChar(' ')).arg(yPos,0,10,QChar(' ')).arg(sColour, 0, 'f', 1, QChar(' '));
                 fastMetaData.append(pixStr);
                 setFastModel(fastMetaData);
-                fastMetaData.clear();
             }
         }
 
