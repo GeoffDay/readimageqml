@@ -19,4 +19,5 @@ DISTFILES += MyButton.qml \
     playback_loop.png \
     playback_once.png \
     CheckButton.qml \
-    MetaData.qml
+    MetaData.qml \
+    Histogram.qml

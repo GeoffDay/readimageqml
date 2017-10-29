@@ -20,6 +20,7 @@
 #include <dataobject.h>
 
 #define IRANGE 4095                         // so far I'm assuming 12 bits for princeton and SPAD so far. Arf may be higher....
+#define SPEEDOFLIGHT  300                   // used to calc distance with SPAD PLL value
 
 ReadImage::ReadImage(QQuickItem *parent)
     : QQuickPaintedItem(parent)
@@ -166,7 +167,7 @@ void ReadImage::genLCIIColourTable(quint16 min, quint16 max)
     for (int i = 0; i < ranges; i++){colourTable.append(qRgb(255, 255, (int)(i * scale)));}                         //generate Yellow to White
     for (int i = (qMin(min, max) + 7 * ranges); i < 65536; i++){colourTable.append(qRgb(255,255,255));}             // make numbers above max white
 
-    qDebug() << "LCII min" << min << "max" << max ;
+//    qDebug() << "LCII min" << min << "max" << max ;
     colourTableType = true;                                             // true is a LCII colour table
     redraw = 1;
     emit newColourTable(colourTable);
@@ -280,23 +281,116 @@ void ReadImage::getBinHeaderData()
     }
 
     QByteArray baHeader(64, 0);
-    baHeader = file.read(64);      // read the header to a bytearray
-    quint16 *headerPtr = reinterpret_cast<quint16 *>(baHeader.data());   // create a pointer to that bytearray and
+    baHeader = file.read(64);                                           // read the header to a bytearray
+    quint16 *headerPtr = reinterpret_cast<quint16 *>(baHeader.data());  // create a pointer to that bytearray and
+
+    if (*headerPtr++ == 0x55AA) {                                       // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
+        quint32 frameNum  = quint32(*headerPtr++) + quint32((*headerPtr++) << 16);  // col 2, bytes 2, 3, 4 & 5 frame number
+        quint16 frameType       = *headerPtr++;                         // col 4, bytes 6, 7 frame type
+        quint16 funcStatus      = *headerPtr++;                         // col 5, bytes 8, 9 functional status
+        quint16 totHits         = *headerPtr++;                         // col 6, bytes 10, 11 total hits
+        quint16 earlyFExc       = *headerPtr++;                         // col 7, bytes 12, 13 early fire exclusions
+        quint16 termCountExc    = *headerPtr++;                         // col 8, bytes 14, 15 terminal count exclusions
+        quint16 rangeExt        = *headerPtr++;                         // col 9, bytes 16, 17 range extension
+        quint16 natTOFWidth     = *headerPtr++;                         // col 10, bytes 18, 19 native TOF bin width
+        quint16 gateWidth       = *headerPtr++;                         // col 11, bytes 20, 21 Gate width
+        quint16 gateDelay       = *headerPtr++;                         // col 12, bytes 22, 23 Gate delay
+        quint16 clkMode         = *headerPtr++;                         // col 13, bytes 24, 25 Clock mode
+        quint16 trgMode         = *headerPtr++;                         // col 14, bytes 26, 27 Trigger mode
+        quint16 apdSens         = *headerPtr++;                         // col 15, bytes 28, 29 APD sensitivity
+        quint16 apdBias         = *headerPtr++;                         // col 16, bytes 30, 31 APD bia
+        quint16 apdTemp         = *headerPtr++;                         // col 17, bytes 32, 33 APD temp
+        quint16 graySclIntlv    = *headerPtr++;                         // col 18, bytes 34, 35 grayscale interleave
+        quint16 refreshInt      = *headerPtr++;                         // col 19, bytes 36, 37 refresh interval
+        quint16 heatsinkTemp    = *headerPtr++;                         // col 20, bytes 38, 39 Heatsink Temp
+        quint16 framePeriod     = *headerPtr++;                         // col 21, bytes 40, 41 frame period,
 
 
-    if (*headerPtr == 0x55AA) { // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
-        imageType = "Princeton SPAD";
+        metaData.clear();
+        metaData.append("Dir: " + dirStr);
+        metaData.append("File : " + iFileName);
+
+        switch (frameType){
+            case 0: metaData.append("Image Type: Princeton SPAD - TOF");
+                break;
+            case 1: metaData.append("Image Type: Princeton SPAD - Grayscale");
+                break;
+            case 2: metaData.append("Image Type: Princeton SPAD - Test Pattern");
+                break;
+        }
+
         iWidth = 32;
         iHeight = 32;
+        metaData.append("Resolution: 32 x 32");
+
+        switch (clkMode){
+            case 0: metaData.append("Clocking: Internal");
+                break;
+            case 1: metaData.append("Clocking: External");
+                break;
+        }
+
+        switch (trgMode){
+            case 0: metaData.append("Triggering: Internal");
+                break;
+            case 2: metaData.append("Triggering: External");
+                break;
+        }
+
+
+        metaData.append(QString("Gate Delay %1 ns").arg(gateDelay, 4,10, QChar(' ')));
+        metaData.append(QString("Nat TOF  Width %1 ns").arg(natTOFWidth, 4,10, QChar(' ')));
+        metaData.append(QString("Range Ext %1").arg(rangeExt, 4,10, QChar(' ')));
+
+        switch (rangeExt){
+            case 0: metaData.append(QString("Gate Width %1 ns").arg(gateWidth * 4, 4,10, QChar(' ')));
+                break;
+            case 1: metaData.append(QString("Gate Width %1 ns").arg(gateWidth * 2, 4,10, QChar(' ')));
+                break;
+            case 2: metaData.append(QString("Gate Width %1 ns").arg(gateWidth, 4,10, QChar(' ')));
+                break;
+            case 3: metaData.append(QString("Gate Width %1 ns").arg(gateWidth, 4,10, QChar(' ')));
+                break;
+        }
+
+        metaData.append(QString("APD Sensitivity: %1").arg(apdSens, 2,10, QChar(' ')));
+        metaData.append(QString("APD Bias Volatage: %1 V").arg(double(apdBias / 100.0), 5, 'f', 2, QChar(' ')));
+        metaData.append(QString("APD Temp: %1 C").arg(double(apdTemp / 100.0), 5, 'f', 2, QChar(' ')));
+        metaData.append(QString("Frame Period: %1 ns").arg(framePeriod, 8,10, QChar(' ')));
+
         magnification = 20;
     } else {
-        fileVersion = quint32(*headerPtr + 2);
-        spadVersion = quint32(*headerPtr + 4);
-        iWidth = quint32(*(headerPtr + 18));
-        iHeight = quint32(*(headerPtr + 19));
+        // Dennis' SPADs
+        headerPtr++;                                                 // characters A and D
+        quint16 fileVersion      = *headerPtr++;
+        headerPtr++;                                                 // characters A and D
+        headerPtr++;                                                 // characters A and D
+        quint32 timeStamp        = quint32(*headerPtr++);            // col 2, bytes 2, 3 frame number
+        timeStamp                += quint32((*headerPtr++) << 16);   // col 3, bytes 4, 5 frame number
+        quint32 timeNsStamp      = quint32(*headerPtr++);            // col 2, bytes 2, 3 frame number
+        timeNsStamp              += quint32((*headerPtr++) << 16);   // col 3, bytes 4, 5 frame number
+        quint16 spadVersion      = *headerPtr++;
+        headerPtr++;                                                 // characters A and D
+        quint16 spadPLL          = *headerPtr++;
+        quint16 delay            = *headerPtr++;
+        quint16 window           = *headerPtr++;
+        quint32 frameCount       = quint32(*headerPtr++);            // col 2, bytes 2, 3 frame number
+        frameCount               += quint32((*headerPtr++) << 16);   // col 3, bytes 4, 5 frame number
+        headerPtr++;
+        headerPtr++;
+        iWidth                  = *headerPtr++;
+        iHeight                 = *headerPtr++;
+        quint32 frameInt        = quint32(*headerPtr++);            // col 2, bytes 2, 3 frame number
+        frameInt                += quint32((*headerPtr++) << 16);   // col 3, bytes 4, 5 frame number
+        quint32 laserInt        = quint32(*headerPtr++);            // col 2, bytes 2, 3 frame number
+        laserInt                += quint32((*headerPtr++) << 16);   // col 3, bytes 4, 5 frame number
+
+
+
+        QDateTime UTC(QDateTime::fromTime_t(timeStamp));
 
         if (iWidth == 32) {
-            imageType = "Gen 1 SPADs   ";
+            imageType = "Dennis's Gen 1 SPADs   ";
             magnification = 20;
          }
 
@@ -306,18 +400,24 @@ void ReadImage::getBinHeaderData()
         }
 
         if (iWidth == 128) {
-            imageType = "Gen 2 SPADs   ";
+            imageType = "Dennis's Gen 2 SPADs   ";
             magnification = 5;
          }
-    }
 
-    metaData.clear();
-    metaData.append("Dir: " + dirStr);
-    metaData.append("File : " + iFileName);
-    metaData.append("Image Type: " + imageType);
-    metaData.append("File Version: " + QString::number(fileVersion, 10));
-    metaData.append("SPAD Version: " + QString::number(spadVersion, 10));
-    metaData.append("Resolution: " + QString::number(iWidth, 10) + " x " + QString::number(iHeight, 10));
+        metaData.clear();
+        metaData.append("Dir: " + dirStr);
+        metaData.append("File: " + iFileName);
+        metaData.append("Image Type: " + imageType);
+        metaData.append(QString("File Version: %1").arg(fileVersion));
+        metaData.append(QString("SPAD Version: %1").arg(spadVersion));
+        metaData.append(QString("SPAD PLL: %1").arg(spadPLL));
+        metaData.append(QString("Resolution: %1 x %2").arg(iWidth).arg(iHeight));
+        metaData.append(QString("Frames: %1").arg(frameCount));
+        metaData.append(QString("Delay: %1 clocks (%2m)").arg(delay).arg(delay * SPEEDOFLIGHT / spadPLL / 2));
+        metaData.append(QString("Window: %1 clocks (%2m)").arg(window).arg(window * SPEEDOFLIGHT / spadPLL / 2));
+        metaData.append(QString("Laser Interval: %1s (%2Hz)").arg(laserInt * 10E-09).arg(1/double(laserInt * 10E-09)));
+        metaData.append(QString("Frame Interval: %1++s (%2Hz)").arg(frameInt * 10E-09).arg(1/double(frameInt * 10E-09)));
+    }
 
     setModel(metaData);
 
@@ -330,12 +430,11 @@ void ReadImage::getBinHeaderData()
     numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
     emit nFramesChanged();        //set our number of frames to the widget
 
-    qDebug() << "imageType " << imageType << spadVersion << iWidth << iHeight << numberOfFrames;
+//    qDebug() << "imageType " << imageType << spadVersion << iWidth << iHeight << numberOfFrames;
 
     totalPixels = iWidth * iHeight;
 
     filePos = file.pos();                       // get our current file position
-//    resize(QSize((iWidth * magnification), (iHeight * magnification)));
 
     setAGCOn();
     redraw = 1;
@@ -454,13 +553,13 @@ int ReadImage::getBinImage(int rdrw, int frame)
         imageMax = (quint16)(((imageMax * 97) + (3 * thisImageMax)) / 100);
 
 
-        if (AGC && (abs(quint16(imageMin - ctMin)) > 2)){
+        if (AGC && (abs(quint16(imageMin - ctMin)) > 20)){
             setCTMin(imageMin);
             emit ctMinChanged();
 //            recalcColourTable(ctMin, ctMax);
         }
 
-        if (AGC && (abs(quint16(imageMax - ctMax)) > 2)){
+        if (AGC && (abs(quint16(imageMax - ctMax)) > 20)){
             setCTMax(imageMax);
             emit ctMaxChanged();}
 //            recalcColourTable(ctMin, ctMax);
