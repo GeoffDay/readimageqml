@@ -45,6 +45,10 @@ ApplicationWindow {
                               aBinImageFile.setMousePos(mouse.x, mouse.y)
                           }
 
+                        onMouseYChanged: {
+                            aBinImageFile.setMousePos(mouse.x, mouse.y)
+                        }
+
                         onClicked: {
                             if (mouse.button == Qt.LeftButton)      // click to pause or play
                                     playPause.toggle()
@@ -64,7 +68,7 @@ ApplicationWindow {
                         }
                     }
 
-                    onFNameInfoChanged: fileNameInfo.text = fNameInfo
+        //            onFNameInfoChanged: fileNameInfo.text = fNameInfo
                     onCtMinChanged: palette.min = ctMin
                     onCtMaxChanged: palette.max = ctMax
                     onStartFrameChanged: iPos.startFrame = startFrame
@@ -87,7 +91,7 @@ ApplicationWindow {
                         model: aBinImageFile.model
                         delegate: Rectangle {
                                           height: 35
-                                          width: 220
+                                          width: 520
     //                                      color: "black"
                                           Text {
                                               font.pointSize: 16
@@ -98,7 +102,7 @@ ApplicationWindow {
                 }
                 Item {                  //  this worked on a datalist in Main. How to change main tho'
                     id: metaDatab
-                    width: 220
+                    width: 520
                     height: 600
 
                     ListView {
@@ -106,7 +110,7 @@ ApplicationWindow {
                         model: aBinImageFile.fastModel
                         delegate: Rectangle {
                             height: 35
-                            width: 220
+                            width: 520
                             color: "yellow"
                             Text {
                                 font.pointSize: 16
@@ -157,6 +161,7 @@ ApplicationWindow {
                 onActivated: {
                     console.log("prev file button")
                     aBinImageFile.prevIFile()
+                    timer.start()
                 }
             }
 
@@ -180,6 +185,7 @@ ApplicationWindow {
                 onActivated: {
                     console.log("next file button pressed")
                     aBinImageFile.nextIFile()
+                    timer.start()
                 }
             }
 

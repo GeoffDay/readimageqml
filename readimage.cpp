@@ -292,7 +292,7 @@ void ReadImage::getBinHeaderData()
         quint16 earlyFExc       = *headerPtr++;                         // col 7, bytes 12, 13 early fire exclusions
         quint16 termCountExc    = *headerPtr++;                         // col 8, bytes 14, 15 terminal count exclusions
         quint16 rangeExt        = *headerPtr++;                         // col 9, bytes 16, 17 range extension
-        quint16 natTOFWidth     = *headerPtr++;                         // col 10, bytes 18, 19 native TOF bin width
+        quint16 natTOFWidth     = *headerPtr++;                         // col 10, bytes 18, 19 native TOF bin width ps
         quint16 gateWidth       = *headerPtr++;                         // col 11, bytes 20, 21 Gate width
         quint16 gateDelay       = *headerPtr++;                         // col 12, bytes 22, 23 Gate delay
         quint16 clkMode         = *headerPtr++;                         // col 13, bytes 24, 25 Clock mode
@@ -339,11 +339,11 @@ void ReadImage::getBinHeaderData()
 
 
         metaData.append(QString("Gate Delay %1 ns").arg(gateDelay, 4,10, QChar(' ')));
-        metaData.append(QString("Nat TOF  Width %1 ns").arg(natTOFWidth, 4,10, QChar(' ')));
+        metaData.append(QString("Nat TOF bin Width %1 ps").arg(natTOFWidth, 4,10, QChar(' ')));
         metaData.append(QString("Range Ext %1").arg(rangeExt, 4,10, QChar(' ')));
 
         switch (rangeExt){
-            case 0: metaData.append(QString("Gate Width %1 ns").arg(gateWidth * 4, 4,10, QChar(' ')));
+            case 0: metaData.append(QString("Gate Width %1 ns").arg(gateWidth / 4, 4,10, QChar(' ')));
                 break;
             case 1: metaData.append(QString("Gate Width %1 ns").arg(gateWidth * 2, 4,10, QChar(' ')));
                 break;
@@ -353,10 +353,11 @@ void ReadImage::getBinHeaderData()
                 break;
         }
 
+        metaData.append(QString("Early Fire Exclusions: %1").arg(earlyFExc));
+        metaData.append(QString("Terminal Count Exclusions: %1").arg(termCountExc));
         metaData.append(QString("APD Sensitivity: %1").arg(apdSens, 2,10, QChar(' ')));
         metaData.append(QString("APD Bias Volatage: %1 V").arg(double(apdBias / 100.0), 5, 'f', 2, QChar(' ')));
         metaData.append(QString("APD Temp: %1 C").arg(double(apdTemp / 100.0), 5, 'f', 2, QChar(' ')));
-        metaData.append(QString("Frame Period: %1 ns").arg(framePeriod, 8,10, QChar(' ')));
 
         magnification = 20;
     } else {
@@ -469,14 +470,11 @@ void ReadImage::getFastBinHeaderData(QByteArray baFastHeader)
     if (*headerPtr == 0x55AA) {                                                   // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
         quint32 frameNum  = quint32(*(headerPtr + 1)) + quint32(*(headerPtr + 2) << 16);    // col 2, bytes 2, 3, 4 & 5 frame number
         quint16 totHits         = *(headerPtr + 5);                                 // col 6, bytes 10, 11 total hits
-        quint16 earlyFExc       = *(headerPtr + 6);                                 // col 7, bytes 12, 13 early fire exclusions
-        quint16 termCountExc    = *(headerPtr + 7);                                 // col 8, bytes 14, 15 terminal count exclusions
-        quint16 framePeriod     = *(headerPtr + 12);                                 // col 21, bytes 40, 41 frame period,
+        quint16 framePeriod     = *(headerPtr + 20);                                 // col 21, bytes 40, 41 frame period,
 
         fastMetaData.append(QString("Frame Number: %1 ").arg(frameNum));
         fastMetaData.append(QString("Total Hits: %1").arg(totHits));
-        fastMetaData.append(QString("Early Fire Exclusions: %1").arg(earlyFExc));
-        fastMetaData.append(QString("Terminal Count Exclusions: %1").arg(termCountExc));
+
         fastMetaData.append(QString("Frame Period: %1ns").arg(framePeriod));
     } else {
         // Dennis' SPADs
