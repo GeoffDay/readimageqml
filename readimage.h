@@ -84,6 +84,7 @@ public:
 
 
     void getBinHeaderData();
+    void getFastBinHeaderData(QByteArray);
     QString IFileName() const;
     void paint(QPainter *painter);
 
