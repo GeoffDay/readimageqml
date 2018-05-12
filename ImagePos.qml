@@ -67,18 +67,19 @@ Item {
     Item {
         id: currentPointer
         x: (currentFrame - 1) * iScale + currentPointer.width / 2
-        width: filePosBackGround.height / 2; height: filePosBackGround.height / 2
+        width: 30; height: filePosBackGround.height / 2
         anchors.bottom: filePosBackGround.verticalCenter
 
         Image {
              width: 30; height: 30
              smooth: true
              source: "current.png"
+             anchors.bottom: parent.bottom
          }
 
         Text {
             id: currentText
-             anchors {centerIn: parent; verticalCenterOffset: -4; horizontalCenterOffset: 3}
+             anchors {centerIn: parent; verticalCenterOffset: -7; horizontalCenterOffset: 3}
             font.pixelSize: parent.height * 0.5
             style: Text.Sunken; color: "white"; styleColor: "black"; smooth: true
             text: 1 + Math.round((currentPointer.x - currentPointer.width / 2) / (imagePos.width - (2 * currentPointer.width)) * (nFrames - 1))
@@ -89,7 +90,7 @@ Item {
             anchors.fill: currentPointer
             drag.target: currentPointer
             drag.axis: Drag.XAxis
-            drag.minimumX: 0; drag.maximumX: imagePos.width - currentPointer.width
+            drag.minimumX: currentPointer.width/2; drag.maximumX: imagePos.width - currentPointer.width
         }
 
 //        onXChanged: imagePosObject.getCurrentFrame(1 + Math.round((currentPointer.x - currentPointer.width / 2)/ (imagePos.width - (2 * currentPointer.width)) * (nFrames - 1)))
@@ -107,7 +108,7 @@ Item {
         Image {
              width: 30; height: 30
              smooth: true
-             source: "start.png"
+             source: "Start.png"
          }
 
         Text {
@@ -139,7 +140,7 @@ Item {
         Image {
              width: 30; height: 30
              smooth: true
-             source: "end.png"
+             source: "End.png"
          }
 
 

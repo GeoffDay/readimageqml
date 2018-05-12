@@ -24,10 +24,12 @@ class ReadImage : public QQuickPaintedItem
 
     Q_PROPERTY(QString fNameInfo READ fName NOTIFY fNameInfoChanged)
     Q_PROPERTY(quint32 nFrames READ nFrames NOTIFY nFramesChanged)
+
+    Q_PROPERTY(quint32 currentFrame READ cFrame WRITE setCurrentFrame NOTIFY currentFrameChanged)
     Q_PROPERTY(quint32 startFrame READ sFrame WRITE setStartFrame NOTIFY startFrameChanged)
     Q_PROPERTY(quint32 endFrame READ eFrame WRITE setEndFrame NOTIFY endFrameChanged)
-    Q_PROPERTY(quint32 currentFrame READ cFrame WRITE setCurrentFrame NOTIFY currentFrameChanged)
     Q_PROPERTY(bool playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY(quint32 iRange READ getRange)
     Q_PROPERTY(quint32 ctMin READ getCTMin WRITE setCTMin NOTIFY ctMinChanged)
     Q_PROPERTY(quint32 ctMax READ getCTMax WRITE setCTMax NOTIFY ctMaxChanged)
     Q_PROPERTY(bool colourTableType READ getCTMax WRITE setCTType NOTIFY ctTypeChanged)
@@ -37,8 +39,8 @@ class ReadImage : public QQuickPaintedItem
 
 public:
     ReadImage(QQuickItem *parent = 0);
-
     QStringList m_model, n_model;
+
     Q_INVOKABLE void setFastModel(QStringList m);
     Q_INVOKABLE void setModel(QStringList m);
     Q_INVOKABLE QStringList getModel();
@@ -50,11 +52,15 @@ public:
     Q_INVOKABLE bool prevIFile();
     Q_INVOKABLE bool nextIFile();
     Q_INVOKABLE void setMagnification(int);
+    Q_INVOKABLE void exportSegment(int);
     Q_INVOKABLE quint32 getMagnification() const;
-    Q_INVOKABLE int getBinImage(int, int);
+
     Q_INVOKABLE void timerTimeout();
+
     Q_INVOKABLE bool getPlayMode();
     Q_INVOKABLE void setPlayMode(bool);
+
+    Q_INVOKABLE quint32 getRange();
     Q_INVOKABLE void setCTMin(quint32);
     Q_INVOKABLE void setCTMax(quint32 tCTMax);
     Q_INVOKABLE quint32 getCTMin();
@@ -83,15 +89,22 @@ public:
     Q_INVOKABLE void end();
 
 
+    int getArfImage(int, int);
+    int getBinImage(int, int);
+    void getArfHeaderData();
     void getBinHeaderData();
     void getFastBinHeaderData(QByteArray);
+
     QString IFileName() const;
+    void exportARF();
+
+
     void paint(QPainter *painter);
 
     void pixScl(QString tString);
 
 private slots:
-//    void genByteSwapTable();
+    void genByteSwapTable();
     void genGreyColourTable(quint16, quint16);
     void genLCIIColourTable(quint16, quint16);
     void recalcColourTable(quint16, quint16);
@@ -120,13 +133,14 @@ private:
     QStringList iFileList, metaData, fastMetaData;
     QString pixStr, imageType, fNameandImagetype;
     QString dirStr, iFileName, iExt, exportFileName;
-    quint32 iWidth, iHeight,totalPixels, xPos, yPos;
+    quint32 iWidth, iHeight, totalPixels, xPos, yPos;
     quint32 numberOfFrames, currentFrame, startFrame, endFrame, magnification;
-    quint32 spadVersion, fileVersion, filePos, redraw;
-    quint32 outlierThreshold, ctMin, ctMax, imageMin, imageMax;               //colour table min and max
+    quint32 spadVersion, fileVersion, fileStartOffset, redraw, skipPixels;
+    quint32 iRange, outlierThreshold, ctMin, ctMax, imageMin, imageMax;               //colour table min and max
 
     double pixelScale;
-    bool flipX, flipY, loopMode, playMode, colourTableType, AGC;
+    bool flipX, flipY, loopMode, playMode, colourTableType, AGC, HasFrameHeaders;
+    int exportFlag;                     //non zero value while exporting 1 BIN, 2 ARF  , 3 BMP, 4 AVI
 
     QVector<quint16> byteSwapTable;     //used for byteswapping the file data
     QVector<quint32> histogram;         //used to create a histogram of values needs to be 32 as 1024 * 768 = 786432

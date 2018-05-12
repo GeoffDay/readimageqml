@@ -1,3 +1,6 @@
+// similar to CheckButton but with the ability to spec. the images
+// and to set and reset mode.
+
 import QtQuick 2.0
 
 Item {

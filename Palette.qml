@@ -19,7 +19,7 @@ Item {
     property string cTableText: "Left Click to change colour"
 
     property double pScale: (palette.height - (2 * minPointer.height)) / range
-    property int pHeight: palette.height - (2 * minPointer.height)  //not used now
+
 
     onCTableTypeChanged: setTableType()     //initially this came from the widget.cpp now its internal
 

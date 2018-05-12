@@ -12,11 +12,11 @@
         <file>playback_once.png</file>
         <file>CheckButton.qml</file>
         <file>current.png</file>
-        <file>end.png</file>
         <file>ImagePos.qml</file>
-        <file>start.png</file>
         <file>Palette.qml</file>
         <file>ToggleButton.qml</file>
         <file>MetaData.qml</file>
+        <file>End.png</file>
+        <file>Start.png</file>
     </qresource>
 </RCC>

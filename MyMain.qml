@@ -18,6 +18,7 @@ ApplicationWindow {
 
     property int magnification: 20
     property string fNameInfo: ""
+    property int exportType: 2
 
     onWindowStateChanged: {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
@@ -68,7 +69,6 @@ ApplicationWindow {
                         }
                     }
 
-        //            onFNameInfoChanged: fileNameInfo.text = fNameInfo
                     onCtMinChanged: palette.min = ctMin
                     onCtMaxChanged: palette.max = ctMax
                     onStartFrameChanged: iPos.startFrame = startFrame
@@ -81,7 +81,7 @@ ApplicationWindow {
                 }
 
             Column {
-                Item {                  //  this worked on a datalist in Main. How to change main tho'
+                Item {                  // these are the file names and static parameters.
                     id: metaDataa
                     width: 520
                     height: 600
@@ -100,7 +100,7 @@ ApplicationWindow {
                                       }
                     }
                 }
-                Item {                  //  this worked on a datalist in Main. How to change main tho'
+                Item {                  // these are the parameters that change on a frame to frame basis.
                     id: metaDatab
                     width: 520
                     height: 600
@@ -122,15 +122,6 @@ ApplicationWindow {
              }
 
 
-//                Label {
-//                    id: fileNameInfo
-//                    width: 200
-//                    height: 30
-//                    Text {
-//                        text: "-"
-//                    }
-//                }
-
             Palette {
                 id: palette
                 width: 70
@@ -144,7 +135,7 @@ ApplicationWindow {
             id: iPos
             width: mainWindow.width - 4
             height: 60
-            y: mainWindow.height - 96
+            y: mainWindow.height - 100
             x: 2
         }
 
@@ -158,10 +149,12 @@ ApplicationWindow {
                 frColor: "#000000"
                 bkColor: "#80a060"
                 bdColor: "#004040"
+
                 onActivated: {
                     console.log("prev file button")
                     aBinImageFile.prevIFile()
                     timer.start()
+                    playPause.set()
                 }
             }
 
@@ -170,6 +163,7 @@ ApplicationWindow {
                 frColor: "#000000"
                 bkColor: "#b09070"
                 bdColor: "#004040"
+
                 onActivated: {
                       console.log("open file button pressed")
                       fileDialog.open()
@@ -186,12 +180,13 @@ ApplicationWindow {
                     console.log("next file button pressed")
                     aBinImageFile.nextIFile()
                     timer.start()
+                    playPause.set()
                 }
             }
 
             Button {
-                    width: 32
-                    height: 32
+                width: 32
+                height: 32
                 Image {source: "playback_begin.png"}
 
                 onClicked: {
@@ -294,7 +289,11 @@ ApplicationWindow {
                 bdColor: "#7678da"
 
                 onActivated: {
-                      console.log("export button pressed")
+                    aBinImageFile.exportSegment(xports.get(xport.currentIndex).value)
+                    aBinImageFile.play()
+//                    aBinImageFile.loop(tsState)
+                    timer.start()
+                    console.log("export button pressed" + xports.get(xport.currentIndex).value)
                 }
             }
 
@@ -312,10 +311,11 @@ ApplicationWindow {
                 }
 
                 model: ListModel {
-                    ListElement { Xport: "as BIN"; value: 20 }
-                    ListElement { Xport: "as ARF"; value: 20 }
-                    ListElement { Xport: "as BMP"; value: 40 }
-                    ListElement { Xport: "as AVI"; value: 20 }
+                    id: xports
+                    ListElement { Xport: "as BIN"; value: 1 }
+                    ListElement { Xport: "as ARF"; value: 2 }
+                    ListElement { Xport: "as BMP"; value: 3 }
+                    ListElement { Xport: "as AVI"; value: 4 }
                 }
             }
 
