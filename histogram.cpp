@@ -9,8 +9,8 @@
 
 #include "histogram.h"
 
-Histogram::Histogram(QWidget *parent) :
-    QWidget(parent)
+Histogram::Histogram(QQuickItem *parent)
+    : QQuickPaintedItem(parent)
 {
     histWidth = 850;
     histHeight = 500;

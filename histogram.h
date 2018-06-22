@@ -3,12 +3,11 @@
 
 #include <QRgb>
 #include <QImage>
-#include <QWidget>
 #include <QVector>
 #include <QPainter>
 
 
-class Histogram : public QWidget
+class Histogram : public QQuickPaintedItem
 {
     Q_OBJECT
 public:
