@@ -6,12 +6,10 @@
 #include <QFile>
 #include <QImage>
 #include <QVector>
-//#include <QPainter>
 #include <QByteArray>
 #include <QBasicTimer>
 #include <QWheelEvent>
 
-#include <dataobject.h>
 
 #include <QtQuick/QQuickPaintedItem>
 
@@ -118,7 +116,6 @@ signals:
     void nFramesChanged();
     void newHistogram(QVector<quint32>);
     void newColourTable(QVector<QRgb>);
-//    void newImageLimits(QPoint(int, int));
     void fNameInfoChanged(QString);
     void playModeChanged(bool);
     void ctTypeChanged(bool);

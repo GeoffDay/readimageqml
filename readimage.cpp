@@ -17,7 +17,6 @@
 #include <QStringBuilder>
 
 #include "readimage.h"
-#include <dataobject.h>
 
 #define SPEEDOFLIGHT  300                   // used to calc distance with SPAD PLL value
 
@@ -60,6 +59,7 @@ void ReadImage::setModel(QStringList m) {
     m_model = m;
     modelChanged();
 }
+
 
 void ReadImage::setFastModel(QStringList m) {
     n_model = m;
@@ -124,7 +124,6 @@ void ReadImage::recalcColourTable(quint16 min, quint16 max)
     }
    // emit newImageLimits(QPoint(min, max));
 }
-
 
 
 

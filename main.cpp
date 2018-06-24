@@ -3,7 +3,6 @@
 #include <QQmlContext>
 
 #include <readimage.h>
-#include <dataobject.h>
 
 
 

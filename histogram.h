@@ -4,8 +4,8 @@
 #include <QRgb>
 #include <QImage>
 #include <QVector>
-#include <QPainter>
 
+#include <QtQuick/QQuickPaintedItem>
 
 class Histogram : public QQuickPaintedItem
 {
@@ -29,8 +29,8 @@ private slots:
 protected:
     void wheelEvent(QWheelEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent *event);
+    void paint(QPainter painter);
+
 
 private:
     void resizeImage(QImage *image, const QSize &newSize);
