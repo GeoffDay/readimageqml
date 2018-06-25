@@ -249,31 +249,6 @@ void Histogram::paint(QPainter painter)
 
 
 
-void Histogram::resizeImage(QImage *image, const QSize &newSize)
-{
-    if (image->size() == newSize)
-        return;
-
-    QImage newImage(newSize, QImage::Format_RGB32);
-    QPainter painter(&newImage);
-    painter.drawImage(QPoint(0, 0), *image);
-    *image = newImage;
-    histWidth = newSize.width();
-    histHeight = newSize.height();
-    pltWidth = (histImage.width() - histHOffset - 10) / finalTicks * finalTicks;
-    histXScale = double(double(histXMax - histXMin) / pltWidth);
-    histYScale = (histImage.height() - histVOffset) / (maxPixels / linZoom);
-//    qDebug() << "resize histImage" << histWidth << " x " << histHeight;
-}
-
-
-void Histogram::resizeEvent(QResizeEvent *event)
-{
-    resizeImage(&histImage, QSize(width(), height()));
-    update();
-
-    QWidget::resizeEvent(event);
-}
 
 
 

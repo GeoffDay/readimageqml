@@ -4,14 +4,35 @@
 #include <QRgb>
 #include <QImage>
 #include <QVector>
+#include <QByteArray>
+#include <QBasicTimer>
+#include <QWheelEvent>
 
 #include <QtQuick/QQuickPaintedItem>
 
 class Histogram : public QQuickPaintedItem
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList model MEMBER m_model READ getModel NOTIFY modelChanged)
+    Q_PROPERTY(QStringList fastModel MEMBER n_model READ getFastModel NOTIFY fastModelChanged)
+
+    Q_PROPERTY(QString fNameInfo READ fName NOTIFY fNameInfoChanged)
+    Q_PROPERTY(quint32 nFrames READ nFrames NOTIFY nFramesChanged)
+
+    Q_PROPERTY(quint32 currentFrame READ cFrame WRITE setCurrentFrame NOTIFY currentFrameChanged)
+    Q_PROPERTY(quint32 startFrame READ sFrame WRITE setStartFrame NOTIFY startFrameChanged)
+    Q_PROPERTY(quint32 endFrame READ eFrame WRITE setEndFrame NOTIFY endFrameChanged)
+    Q_PROPERTY(bool playMode READ getPlayMode WRITE setPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY(quint32 iRange READ getRange)
+    Q_PROPERTY(quint32 ctMin READ getCTMin WRITE setCTMin NOTIFY ctMinChanged)
+    Q_PROPERTY(quint32 ctMax READ getCTMax WRITE setCTMax NOTIFY ctMaxChanged)
+    Q_PROPERTY(bool colourTableType READ getCTMax WRITE setCTType NOTIFY ctTypeChanged)
+
+    Q_PROPERTY(quint32 magnification READ getMagnification WRITE setMagnification)
+    Q_PROPERTY(QString iFileName READ IFileName WRITE openIFileName)
+
 public:
-    Histogram(QWidget *parent = 0);
+    Histogram(QQuickItem *parent = 0);
     
 signals:
     void histVals(QString histStr);         //value under the mouse pointer
@@ -33,7 +54,6 @@ protected:
 
 
 private:
-    void resizeImage(QImage *image, const QSize &newSize);
     bool logVertAxis;
     QImage histImage;
     quint32 histWidth, histHeight, histHOffset, histVOffset;
