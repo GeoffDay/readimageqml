@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<RCC>
+    <qresource prefix="/">
+        <file alias="playback_end.png">playback_end.png</file>
+        <file alias="playback_begin.png">playback_begin.png</file>
+        <file alias="playback_ff.png">playback_ff.png</file>
+        <file alias="playback_pause.png">playback_pause.png</file>
+        <file alias="playback_rew.png">playback_rew.png</file>
+        <file alias="playback_play.png">playback_play.png</file>
+        <file alias="playback_loop.png">playback_loop.png</file>
+        <file alias="playback_once.png">playback_once.png</file>
+        <file alias="current.png">current.png</file>
+        <file alias="end.png">end.png</file>
+        <file alias="start.png">start.png</file>
+    </qresource>
+</RCC>

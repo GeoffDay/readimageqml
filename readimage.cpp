@@ -461,7 +461,7 @@ void ReadImage::getBinHeaderData()
     QByteArray baHeader(64, 0);
     baHeader = file.read(64);                                           // read the header to a bytearray
     quint16 *headerPtr = reinterpret_cast<quint16 *>(baHeader.data());  // create a pointer to that bytearray and
-    qDebug() << imageType << *headerPtr;
+    quint16 *headerPtr2 = reinterpret_cast<quint16 *>(baHeader.data() + 2);  // create a pointer to the next 2 bytes to see if its SPC2
 
     if (*headerPtr == 0x55AA){                                          // Princeton - col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
         quint32 frameNum  = quint32(*headerPtr++) + quint32((*headerPtr++) << 16);  // col 2, bytes 2, 3, 4 & 5 frame number
@@ -536,10 +536,8 @@ void ReadImage::getBinHeaderData()
         HasFrameHeaders = true;
     }
 
-//    headerPtr = reinterpret_cast<quint16 *>(baHeader.data());  // create a pointer to that bytearray and
-    qDebug() << imageType << *headerPtr;
 
-    if (*headerPtr == 0x5350){                                                         // Dennis' SPADs
+    if ((*headerPtr == 0x5350) && (*headerPtr2 != 0x4332)){          // Dennis' SPADs
         headerPtr++;                                                 // characters A and D
         headerPtr++;
         quint16 fileVersion      = *headerPtr++;
@@ -565,8 +563,6 @@ void ReadImage::getBinHeaderData()
         quint32 laserInt        = quint32(*headerPtr++);            // col 2, bytes 2, 3 frame number
         laserInt                += quint32((*headerPtr++) << 16);   // col 3, bytes 4, 5 frame number
 
-        QDateTime UTC(QDateTime::fromTime_t(timeStamp));
-
         switch (iWidth){
             case 32:    imageType = "Dennis's Gen 1 SPADs   ";
                         magnification = 20;
@@ -581,6 +577,7 @@ void ReadImage::getBinHeaderData()
                     break;
             default:    imageType = "Bad image size";
                         magnification = 1;
+                        qDebug() << "Bad image size" << iWidth;
                     break;
         }
 
@@ -592,17 +589,10 @@ void ReadImage::getBinHeaderData()
         metaData.append(QString("SPAD Version: %1").arg(spadVersion));
         metaData.append(QString("SPAD PLL: %1MHz").arg(spadPLL));
         metaData.append(QString("Resolution: %1 x %2").arg(iWidth).arg(iHeight));
-//        metaData.append(QString("Frames: %1").arg(frameCount));
-//        metaData.append(QString("Delay: %1 clocks (%2m)").arg(delay).arg(delay * SPEEDOFLIGHT / spadPLL / 2));
-//        metaData.append(QString("Window: %1 clocks (%2m)").arg(window).arg(window * SPEEDOFLIGHT / spadPLL / 2));
-//        metaData.append(QString("Laser Interval: %1s (%2Hz)").arg(laserInt * 10E-09).arg(1/double(laserInt * 10E-09)));
-//        metaData.append(QString("Frame Interval: %1++s (%2Hz)").arg(frameInt * 10E-09).arg(1/double(frameInt * 10E-09)));
 
         HasFrameHeaders = true;
     }
 
-    qDebug() << imageType << *headerPtr << iWidth << iHeight << fileVersion;
-//    headerPtr = reinterpret_cast<quint16 *>(baHeader.data());  // create a pointer to that bytearray and
 
     if (*headerPtr == 0x5053){                                       // Monash or BAE SPAD data
         headerPtr++;                                                 // characters A and D
@@ -631,7 +621,28 @@ void ReadImage::getBinHeaderData()
         metaData.append("File: " + iFileName);
         metaData.append("Image Type: " + imageType);
         metaData.append(QString("File Version: %1").arg(fileVersion));
+        metaData.append(QString("Resolution: %1 x %2").arg(iWidth).arg(iHeight));
+    }
 
+    if ((*headerPtr == 0x5350) && (*headerPtr2 == 0x4332)){         // SPC2
+        headerPtr++;                                                // 0
+        headerPtr++;                                                // 2
+        quint16 fileVersion      = *headerPtr++;                    // 4
+
+        iWidth = 32;
+        iHeight = 32;
+        imageType = "SPC2   ";
+        magnification = 20;
+
+        metaData.clear();
+        metaData.append("Dir: " + dirStr);
+        metaData.append("File: " + iFileName);
+        metaData.append("Image Type: " + imageType);
+        metaData.append(QString("File Version: %1").arg(fileVersion));
+        metaData.append(QString("Resolution: %1 x %2").arg(iWidth).arg(iHeight));
+        metaData.append(QString("Frame Rate: 50 Hz"));
+
+        HasFrameHeaders = true;
     }
 
     qDebug() << imageType << *headerPtr << iWidth << iHeight << fileVersion;
@@ -646,8 +657,6 @@ void ReadImage::getBinHeaderData()
 
     numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
     emit nFramesChanged();        //set our number of frames to the widget
-
-//    qDebug() << "imageType " << imageType << spadVersion << iWidth << iHeight << numberOfFrames;
 
     totalPixels = iWidth * iHeight;
 
@@ -678,9 +687,11 @@ void ReadImage::getBinHeaderData()
 void ReadImage::getFastBinHeaderData(QByteArray baFastHeader)
 {
     // This is the stuff that changes frame by frame
+    QDateTime UTC;
 
     fastMetaData.clear();
     quint16 *headerPtr = reinterpret_cast<quint16 *>(baFastHeader.data());  // create a pointer to that bytearray and
+    quint16 *headerPtr2 = reinterpret_cast<quint16 *>(baFastHeader.data() + 2);  // create a pointer to that bytearray and
 
     if (*headerPtr == 0x55AA) {                                                   // col 1, bytes 0, 1 magic number 0xAA55 Endianess is reversed
         quint32 frameNum  = quint32(*(headerPtr + 1)) + quint32(*(headerPtr + 2) << 16);    // col 2, bytes 2, 3, 4 & 5 frame number
@@ -693,7 +704,7 @@ void ReadImage::getFastBinHeaderData(QByteArray baFastHeader)
         fastMetaData.append(QString("Frame Period: %1ns").arg(framePeriod));
     }
 
-    if (*headerPtr == 0x5350){                                                         // Dennis' SPADs
+    if ((*headerPtr == 0x5350) && (*headerPtr2 != 0x4332)){         // Dennis' SPADs
         quint32 timeStamp        = quint32(*(headerPtr + 5)) + quint32((*(headerPtr + 6)) << 16);   // col 3, bytes 4, 5 frame number
 //        quint32 timeNsStamp      = quint32(*(headerPtr + 7)) + quint32((*(headerPtr + 1)) << 16);   // col 3, bytes 4, 5 frame number
         quint16 spadPLL          = *(headerPtr + 11);
@@ -702,7 +713,7 @@ void ReadImage::getFastBinHeaderData(QByteArray baFastHeader)
         quint32 frameCount       = quint32(*(headerPtr + 14)) + quint32((*(headerPtr + 15)) << 16) + 1;   // col 3, bytes 4, 5 frame number
         quint32 frameInt         = quint32(*(headerPtr + 20)) + quint32((*(headerPtr + 21)) << 16);   // col 3, bytes 4, 5 frame number
 
-        QDateTime UTC(QDateTime::fromTime_t(timeStamp));
+        UTC = QDateTime::fromTime_t(timeStamp);
 
         fastMetaData.append(QString("Time %1").arg(UTC.toString("d MMM yyyy hh:mm:ss")));
         fastMetaData.append(QString("Frame Number: %1 ").arg(frameCount));
@@ -715,8 +726,24 @@ void ReadImage::getFastBinHeaderData(QByteArray baFastHeader)
         fastMetaData.append(QString("Frame Interval: %1s (%2Hz)").arg(frameInt * 3.3333333E-09).arg(1/double(frameInt * 3.3333333E-09)));
     }
 
-//    if (*headerPtr == 0x5053){                                       // Monash or BAE SPAD data
+    if ((*headerPtr == 0x5350) && (*headerPtr2 == 0x4332)) {                // SPC2
+        quint32 timeStamp       = quint32(*(headerPtr + 5)) + quint32((*(headerPtr + 6)) << 16);   // col 3, bytes 4, 5 frame number
+        quint16 Gate            = *(headerPtr + 12);                        // 24 width of gate in 50MHz clocks
+        quint16 Integ           = *(headerPtr + 13);                        // 26 number of images hardware averaged
+        quint32 frameCount      = quint32(*(headerPtr + 14));               // 28 col 2, bytes 2, 3 frame number
+        frameCount              += quint32((*(headerPtr + 15)) << 16);      // 30 col 3, bytes 4, 5 frame number
+        quint16 minCount        = *(headerPtr + 16);                        // 32 min photon count
+        quint16 maxCount        = *(headerPtr + 17);                        // 34 max photon count
 
+        UTC = QDateTime::fromTime_t(timeStamp);
+
+        fastMetaData.append(QString("Time %1").arg(UTC.toString("d MMM yyyy hh:mm:ss")));
+        fastMetaData.append(QString("Frame Number: %1 ").arg(frameCount));
+        fastMetaData.append(QString("Gate width: %1 Clocks").arg(Gate));
+        fastMetaData.append(QString("Integrated: %1 images").arg(Integ));
+        fastMetaData.append(QString("Min Photons: %1").arg(minCount));
+        fastMetaData.append(QString("Max Photons: %1").arg(maxCount));
+     }
 }
 
 
@@ -1021,7 +1048,7 @@ void ReadImage::timerTimeout()
         currentFrame++;
         redraw = 1;
 
-        if ((currentFrame - startFrame) == 100){setAGCOff();}
+        if ((currentFrame - startFrame) == 100) setAGCOff();
 
         if (currentFrame > endFrame){
             if (loopMode){
@@ -1041,8 +1068,8 @@ void ReadImage::timerTimeout()
         }
     }
 
-    if (currentFrame > endFrame){currentFrame = endFrame;}          //limit to current frames. QML can go past endstops and read
-    if (currentFrame < startFrame){currentFrame = startFrame;}     //memory after end of file. Good for a laugh but can crash.
+    if (currentFrame > endFrame) currentFrame = endFrame;          //limit to current frames. QML can go past endstops and read
+    if (currentFrame < startFrame) currentFrame = startFrame;      //memory after end of file. Good for a laugh but can crash.
 
     if (iExt == "bin"){
         redraw = getBinImage(redraw, currentFrame);
@@ -1222,7 +1249,7 @@ void ReadImage::setAGCOn()
 void ReadImage::setAGCOff()
 {
     AGC = false;
-    qDebug() << "AGC Off";
+//    qDebug() << "AGC Off";
     emit agcState(false);
 }
 

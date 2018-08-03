@@ -20,7 +20,7 @@ ApplicationWindow {
     property int magnification: 20
     property string fNameInfo: ""
     property int exportType: 2
-    property
+//    property
 
     onWindowStateChanged: {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
