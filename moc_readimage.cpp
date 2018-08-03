@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'readimage.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.9.3)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.11.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -13,7 +13,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'readimage.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.9.3. It"
+#error "This file was generated using the moc from 5.11.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -407,98 +407,98 @@ void ReadImage::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, v
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            typedef void (ReadImage::*_t)();
+            using _t = void (ReadImage::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::modelChanged)) {
                 *result = 0;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)();
+            using _t = void (ReadImage::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::fastModelChanged)) {
                 *result = 1;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)();
+            using _t = void (ReadImage::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::currentFrameChanged)) {
                 *result = 2;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)();
+            using _t = void (ReadImage::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::startFrameChanged)) {
                 *result = 3;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)();
+            using _t = void (ReadImage::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::endFrameChanged)) {
                 *result = 4;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)();
+            using _t = void (ReadImage::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::nFramesChanged)) {
                 *result = 5;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)(QVector<quint32> );
+            using _t = void (ReadImage::*)(QVector<quint32> );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::newHistogram)) {
                 *result = 6;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)(QVector<QRgb> );
+            using _t = void (ReadImage::*)(QVector<QRgb> );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::newColourTable)) {
                 *result = 7;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)(QString );
+            using _t = void (ReadImage::*)(QString );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::fNameInfoChanged)) {
                 *result = 8;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)(bool );
+            using _t = void (ReadImage::*)(bool );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::playModeChanged)) {
                 *result = 9;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)(bool );
+            using _t = void (ReadImage::*)(bool );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::ctTypeChanged)) {
                 *result = 10;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)();
+            using _t = void (ReadImage::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::ctMinChanged)) {
                 *result = 11;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)();
+            using _t = void (ReadImage::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::ctMaxChanged)) {
                 *result = 12;
                 return;
             }
         }
         {
-            typedef void (ReadImage::*_t)(bool );
+            using _t = void (ReadImage::*)(bool );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&ReadImage::agcState)) {
                 *result = 13;
                 return;
@@ -560,7 +560,7 @@ void ReadImage::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, v
 #endif // QT_NO_PROPERTIES
 }
 
-const QMetaObject ReadImage::staticMetaObject = {
+QT_INIT_METAOBJECT const QMetaObject ReadImage::staticMetaObject = {
     { &QQuickPaintedItem::staticMetaObject, qt_meta_stringdata_ReadImage.data,
       qt_meta_data_ReadImage,  qt_static_metacall, nullptr, nullptr}
 };

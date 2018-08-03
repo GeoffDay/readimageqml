@@ -5,6 +5,7 @@ import QtQuick.Dialogs 1.0
 import QtQuick.Window 2.2
 
 import Readstuff 1.0
+import Histstuff 1.0
 
 ApplicationWindow {
 
@@ -19,6 +20,7 @@ ApplicationWindow {
     property int magnification: 20
     property string fNameInfo: ""
     property int exportType: 2
+    property
 
     onWindowStateChanged: {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
@@ -80,6 +82,14 @@ ApplicationWindow {
                     }
                 }
 
+
+                Histogram {
+                    id: aHistogram
+                    width: 200
+                    height: 800
+
+                }
+
             Column {
                 Item {                  // these are the file names and static parameters.
                     id: metaDataa
@@ -97,7 +107,7 @@ ApplicationWindow {
                                               font.pointSize: 16
                                               text: modelData
                                           }
-                                      }
+                                   }
                     }
                 }
                 Item {                  // these are the parameters that change on a frame to frame basis.
@@ -167,6 +177,7 @@ ApplicationWindow {
                 onActivated: {
                       console.log("open file button pressed")
                       fileDialog.open()
+                      playPause.set()
                 }
             }
 

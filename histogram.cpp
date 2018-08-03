@@ -24,14 +24,7 @@ Histogram::Histogram(QQuickItem *parent)
     pixelScale = 1.0;
     initTicks = 10;
     finalTicks = 10;
-    setMouseTracking(true);
-
-  //  QWidget::setWindowIcon("Histogram.ico");
-    setGeometry(450,30,histWidth, histHeight + 40);  //new
-    setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
-    setWindowTitle("Histogram");
-    activateWindow();
-    show();
+    histImage.fill(0xF47f7f7f);
 }
 
 
@@ -90,6 +83,7 @@ void Histogram::setHistogram(QVector<quint32> tHistogram)
 
             if (xPos - histHOffset == j) {
                 histStr = QString("%1, %2").arg(double(i * pixelScale),6,'f',1,QChar(' ')).arg(k,4,10,QChar(' '));
+                painter.drawText(410, 50, histStr);
             }
 
             if (logVertAxis && (k > 1)) {
@@ -122,7 +116,7 @@ void Histogram::setImageSize(QPoint tArfSize)
 
     if (maxPixels < 4100) {
         logVertAxis = false;
-        histYScale = (histImage.height() - histVOffset) / (maxPixels / linZoom);
+        histYScale = double((histImage.height() - histVOffset) / double(maxPixels / linZoom));
     } else {
         logVertAxis = true;
         ordersMag = qLn(maxPixels) / qLn(10);
@@ -219,32 +213,32 @@ int Histogram::niceNumber(int number, bool Round)
 }
 
 
-void Histogram::wheelEvent(QWheelEvent *event)
+//void Histogram::wheelEvent(QWheelEvent *event)
+//{
+//    int numDegrees = event->delta() / 8;
+//    int numSteps = numDegrees / 15;
+
+//    if (event->buttons() == Qt::RightButton) {      //hold down right mouse button to change size
+//        if((numSteps > 0) && (linZoom < 32)) linZoom++;
+//        if((numSteps < 0) && (linZoom > 1)) linZoom--;
+//    }
+
+//    if(!logVertAxis) histYScale = (histImage.height() - histVOffset) / (maxPixels / linZoom);
+//}
+
+
+//void Histogram::mouseMoveEvent(QMouseEvent *event)
+//{
+//    xPos = event->pos().x();
+//    yPos = event->pos().y();
+//}
+
+
+
+void Histogram::paint(QPainter *painter)
 {
-    int numDegrees = event->delta() / 8;
-    int numSteps = numDegrees / 15;
-
-    if (event->buttons() == Qt::RightButton) {      //hold down right mouse button to change size
-        if((numSteps > 0) && (linZoom < 32)) {linZoom++;}
-        if((numSteps < 0) && (linZoom > 1)) {linZoom--;}
-    }
-
-    if(!logVertAxis){histYScale = (histImage.height() - histVOffset) / (maxPixels / linZoom);}
-}
-
-
-void Histogram::mouseMoveEvent(QMouseEvent *event)
-{
-    xPos = event->pos().x();
-    yPos = event->pos().y();
-}
-
-
-
-void Histogram::paint(QPainter painter)
-{
-    QRect dirtyRect = event->rect();
-    painter.drawImage(dirtyRect, histImage, dirtyRect);
+    QRect dirtyRect = QRect(0,0,200,300);
+    painter->drawImage(dirtyRect, histImage);
 }
 
 

@@ -151,6 +151,7 @@ void ReadImage::genGreyColourTable(quint16 min, quint16 max)
     colourTableType = false;                                   // false is a grey colour table
     redraw = 1;
     emit newColourTable(colourTable);
+//    colourTableChanged();
 }
 
 
@@ -185,6 +186,7 @@ void ReadImage::genLCIIColourTable(quint16 min, quint16 max)
     colourTableType = true;                                             // true is a LCII colour table
     redraw = 1;
     emit newColourTable(colourTable);
+//    colourTableChanged();
 }
 
 
@@ -1074,8 +1076,6 @@ void ReadImage::paint(QPainter *painter)
 {
     QRect dirtyRect = QRect(0,0,iWidth * magnification,(iHeight + 0) * magnification);
     painter->drawImage(dirtyRect, image);
-
-//    qDebug() << "in paintevent" << iWidth << iHeight << magnification;
 }
 
 
