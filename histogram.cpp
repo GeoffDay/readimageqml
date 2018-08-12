@@ -45,7 +45,7 @@ void Histogram::setHistogram(QVector<quint32> tHistogram)
 
     int tickSpacing = pltWidth / finalTicks;
 
-//    qDebug() << "in setHistogram" << imageMin << imageMax << "hist x scale" << histXScale << myColourTable.size();
+    qDebug() << "in setHistogram" << imageMin << imageMax << "hist x scale" << histXScale << myColourTable.size();
     painter.setPen("lightgray");
     painter.drawText(xPos - 40,15,histStr);
     painter.drawLine(histHOffset, pltHeight, histHOffset + tickSpacing * finalTicks, pltHeight);

@@ -20,7 +20,6 @@ ApplicationWindow {
     property int magnification: 20
     property string fNameInfo: ""
     property int exportType: 2
-//    property
 
     onWindowStateChanged: {
         console.log( "onWindowStateChanged (Window), state: " +  windowState );
@@ -83,12 +82,20 @@ ApplicationWindow {
                 }
 
 
-                Histogram {
-                    id: aHistogram
+            Histogram {
+                id: aHistogram
+                width: 200
+                height: 800
+                Rectangle{
                     width: 200
                     height: 800
-
+                    color: "blue"
                 }
+                onNewHistogram: {
+                    console.log("HistoGram!")
+                }
+            }
+
 
             Column {
                 Item {                  // these are the file names and static parameters.
@@ -129,7 +136,7 @@ ApplicationWindow {
                         }
                     }
                 }
-             }
+            }
 
 
             Palette {
@@ -390,6 +397,7 @@ ApplicationWindow {
         onTriggered: {
             aBinImageFile.timerTimeout()
             aBinImageFile.update()
+//            aHistogram.
         }
     }
 

@@ -19,11 +19,15 @@ class Histogram : public QQuickPaintedItem
 
 //    Q_PROPERTY(quint32 magnification READ getMagnification WRITE setMagnification)
 
-
+    Q_DECLARE_INTERFACE(Histogram);
+    Q_PLUGIN_METADATA(...)
+        Q_INTERFACES(MyPluginInterface1)
 public:
     Histogram(QQuickItem *parent = 0);
+    virtual ~Histogram() {}
     
 signals:
+    virtual void mySignal() = 0;
     void histVals(QString histStr);         //value under the mouse pointer
     void colourTableChanged();
     void histogramChanged();

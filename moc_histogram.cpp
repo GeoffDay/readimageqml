@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Histogram_t {
-    QByteArrayData data[24];
-    char stringdata0[256];
+    QByteArrayData data[25];
+    char stringdata0[273];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -37,34 +37,36 @@ QT_MOC_LITERAL(1, 10, 8), // "histVals"
 QT_MOC_LITERAL(2, 19, 0), // ""
 QT_MOC_LITERAL(3, 20, 7), // "histStr"
 QT_MOC_LITERAL(4, 28, 18), // "colourTableChanged"
-QT_MOC_LITERAL(5, 47, 12), // "setHistogram"
-QT_MOC_LITERAL(6, 60, 16), // "QVector<quint32>"
-QT_MOC_LITERAL(7, 77, 10), // "tHistogram"
-QT_MOC_LITERAL(8, 88, 14), // "setColourTable"
-QT_MOC_LITERAL(9, 103, 13), // "QVector<QRgb>"
-QT_MOC_LITERAL(10, 117, 12), // "tColourTable"
-QT_MOC_LITERAL(11, 130, 12), // "setImageSize"
-QT_MOC_LITERAL(12, 143, 8), // "tArfSize"
-QT_MOC_LITERAL(13, 152, 10), // "setiMinMax"
-QT_MOC_LITERAL(14, 163, 7), // "tMinMax"
-QT_MOC_LITERAL(15, 171, 13), // "setPixelScale"
-QT_MOC_LITERAL(16, 185, 5), // "paint"
-QT_MOC_LITERAL(17, 191, 9), // "QPainter*"
-QT_MOC_LITERAL(18, 201, 7), // "painter"
-QT_MOC_LITERAL(19, 209, 10), // "niceNumber"
-QT_MOC_LITERAL(20, 220, 6), // "number"
-QT_MOC_LITERAL(21, 227, 5), // "Round"
-QT_MOC_LITERAL(22, 233, 11), // "myHistogram"
-QT_MOC_LITERAL(23, 245, 10) // "waitCTable"
+QT_MOC_LITERAL(5, 47, 16), // "histogramChanged"
+QT_MOC_LITERAL(6, 64, 12), // "setHistogram"
+QT_MOC_LITERAL(7, 77, 16), // "QVector<quint32>"
+QT_MOC_LITERAL(8, 94, 10), // "tHistogram"
+QT_MOC_LITERAL(9, 105, 14), // "setColourTable"
+QT_MOC_LITERAL(10, 120, 13), // "QVector<QRgb>"
+QT_MOC_LITERAL(11, 134, 12), // "tColourTable"
+QT_MOC_LITERAL(12, 147, 12), // "setImageSize"
+QT_MOC_LITERAL(13, 160, 8), // "tArfSize"
+QT_MOC_LITERAL(14, 169, 10), // "setiMinMax"
+QT_MOC_LITERAL(15, 180, 7), // "tMinMax"
+QT_MOC_LITERAL(16, 188, 13), // "setPixelScale"
+QT_MOC_LITERAL(17, 202, 5), // "paint"
+QT_MOC_LITERAL(18, 208, 9), // "QPainter*"
+QT_MOC_LITERAL(19, 218, 7), // "painter"
+QT_MOC_LITERAL(20, 226, 10), // "niceNumber"
+QT_MOC_LITERAL(21, 237, 6), // "number"
+QT_MOC_LITERAL(22, 244, 5), // "Round"
+QT_MOC_LITERAL(23, 250, 11), // "myHistogram"
+QT_MOC_LITERAL(24, 262, 10) // "waitCTable"
 
     },
     "Histogram\0histVals\0\0histStr\0"
-    "colourTableChanged\0setHistogram\0"
-    "QVector<quint32>\0tHistogram\0setColourTable\0"
-    "QVector<QRgb>\0tColourTable\0setImageSize\0"
-    "tArfSize\0setiMinMax\0tMinMax\0setPixelScale\0"
-    "paint\0QPainter*\0painter\0niceNumber\0"
-    "number\0Round\0myHistogram\0waitCTable"
+    "colourTableChanged\0histogramChanged\0"
+    "setHistogram\0QVector<quint32>\0tHistogram\0"
+    "setColourTable\0QVector<QRgb>\0tColourTable\0"
+    "setImageSize\0tArfSize\0setiMinMax\0"
+    "tMinMax\0setPixelScale\0paint\0QPainter*\0"
+    "painter\0niceNumber\0number\0Round\0"
+    "myHistogram\0waitCTable"
 };
 #undef QT_MOC_LITERAL
 
@@ -74,42 +76,44 @@ static const uint qt_meta_data_Histogram[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
-       2,   86, // properties
+      10,   14, // methods
+       2,   92, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       2,       // signalCount
+       3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   59,    2, 0x06 /* Public */,
-       4,    0,   62,    2, 0x06 /* Public */,
+       1,    1,   64,    2, 0x06 /* Public */,
+       4,    0,   67,    2, 0x06 /* Public */,
+       5,    0,   68,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       5,    1,   63,    2, 0x0a /* Public */,
-       8,    1,   66,    2, 0x0a /* Public */,
-      11,    1,   69,    2, 0x0a /* Public */,
-      13,    1,   72,    2, 0x0a /* Public */,
-      15,    1,   75,    2, 0x0a /* Public */,
-      16,    1,   78,    2, 0x0a /* Public */,
-      19,    2,   81,    2, 0x08 /* Private */,
+       6,    1,   69,    2, 0x0a /* Public */,
+       9,    1,   72,    2, 0x0a /* Public */,
+      12,    1,   75,    2, 0x0a /* Public */,
+      14,    1,   78,    2, 0x0a /* Public */,
+      16,    1,   81,    2, 0x0a /* Public */,
+      17,    1,   84,    2, 0x0a /* Public */,
+      20,    2,   87,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
     QMetaType::Void,
+    QMetaType::Void,
 
  // slots: parameters
-    QMetaType::Void, 0x80000000 | 6,    7,
-    QMetaType::Void, 0x80000000 | 9,   10,
-    QMetaType::Void, QMetaType::QPoint,   12,
-    QMetaType::Void, QMetaType::QPoint,   14,
+    QMetaType::Void, 0x80000000 | 7,    8,
+    QMetaType::Void, 0x80000000 | 10,   11,
+    QMetaType::Void, QMetaType::QPoint,   13,
+    QMetaType::Void, QMetaType::QPoint,   15,
     QMetaType::Void, QMetaType::Double,    2,
-    QMetaType::Void, 0x80000000 | 17,   18,
-    QMetaType::Int, QMetaType::Int, QMetaType::Bool,   20,   21,
+    QMetaType::Void, 0x80000000 | 18,   19,
+    QMetaType::Int, QMetaType::Int, QMetaType::Bool,   21,   22,
 
  // properties: name, type, flags
-      22, 0x80000000 | 6, 0x0009500a,
-      23, 0x80000000 | 9, 0x0009500a,
+      23, 0x80000000 | 7, 0x0009500a,
+      24, 0x80000000 | 10, 0x0009500a,
 
  // properties: notify_signal_id
        0,
@@ -126,20 +130,21 @@ void Histogram::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, v
         switch (_id) {
         case 0: _t->histVals((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 1: _t->colourTableChanged(); break;
-        case 2: _t->setHistogram((*reinterpret_cast< QVector<quint32>(*)>(_a[1]))); break;
-        case 3: _t->setColourTable((*reinterpret_cast< QVector<QRgb>(*)>(_a[1]))); break;
-        case 4: _t->setImageSize((*reinterpret_cast< QPoint(*)>(_a[1]))); break;
-        case 5: _t->setiMinMax((*reinterpret_cast< QPoint(*)>(_a[1]))); break;
-        case 6: _t->setPixelScale((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 7: _t->paint((*reinterpret_cast< QPainter*(*)>(_a[1]))); break;
-        case 8: { int _r = _t->niceNumber((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2])));
+        case 2: _t->histogramChanged(); break;
+        case 3: _t->setHistogram((*reinterpret_cast< QVector<quint32>(*)>(_a[1]))); break;
+        case 4: _t->setColourTable((*reinterpret_cast< QVector<QRgb>(*)>(_a[1]))); break;
+        case 5: _t->setImageSize((*reinterpret_cast< QPoint(*)>(_a[1]))); break;
+        case 6: _t->setiMinMax((*reinterpret_cast< QPoint(*)>(_a[1]))); break;
+        case 7: _t->setPixelScale((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 8: _t->paint((*reinterpret_cast< QPainter*(*)>(_a[1]))); break;
+        case 9: { int _r = _t->niceNumber((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< bool(*)>(_a[2])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 2:
+        case 3:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -160,6 +165,13 @@ void Histogram::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, v
             using _t = void (Histogram::*)();
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Histogram::colourTableChanged)) {
                 *result = 1;
+                return;
+            }
+        }
+        {
+            using _t = void (Histogram::*)();
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Histogram::histogramChanged)) {
+                *result = 2;
                 return;
             }
         }
@@ -212,13 +224,13 @@ int Histogram::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 10;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 9)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 10;
     }
 #ifndef QT_NO_PROPERTIES
    else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
@@ -251,6 +263,12 @@ void Histogram::histVals(QString _t1)
 void Histogram::colourTableChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 1, nullptr);
+}
+
+// SIGNAL 2
+void Histogram::histogramChanged()
+{
+    QMetaObject::activate(this, &staticMetaObject, 2, nullptr);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

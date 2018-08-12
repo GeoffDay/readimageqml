@@ -147,7 +147,7 @@ void ReadImage::genGreyColourTable(quint16 min, quint16 max)
         if (i > max){colourTable.append(qRgb(255,255,255));}    // make numbers above max red
     }
 
-//    qDebug() << "grey colour table. min" << min << "max" << max << "number of elements" << colourTable.size();
+    qDebug() << "grey colour table. min" << min << "max" << max << "number of elements" << colourTable.size();
     colourTableType = false;                                   // false is a grey colour table
     redraw = 1;
     emit newColourTable(colourTable);
@@ -161,9 +161,9 @@ void ReadImage::genLCIIColourTable(quint16 min, quint16 max)
     //generate a LCII colour table
     colourTable.clear();
     if (max < 15) {max = 15;}
-    quint16 ranges = (int)(qAbs(max - min) / 7);    //DONT add 7 so that truncation to integer does ceiling function
+    quint16 ranges = static_cast<quint16>(qAbs(max - min) / 7);    //DONT add 7 so that truncation to integer does ceiling function
     if (ranges > (65536/7)) {ranges = (65536/7);}
-    float scale = 255.0/ranges;
+    float scale = static_cast<float>(255.0/ranges);
 
     if (ranges == 0){               //This all needs a good cleanup !!!!!
         scale = 255;
@@ -172,15 +172,15 @@ void ReadImage::genLCIIColourTable(quint16 min, quint16 max)
 
 //    qDebug() << "ranges" << ranges << "scale" << scale;
 
-    for (int i = 0; i < qMin(min, max); i++){colourTable.append(qRgb(0,0,0));}                                      // make numbers below min black
-    for (int i = 0; i < ranges; i++){colourTable.append(qRgb((int)(i * scale), 0, (int)(i * scale)));}              //generate Black to Magenta
-    for (int i = 0; i < ranges; i++){colourTable.append(qRgb((int)((ranges - i) * scale), 0, 255));}                //generate Magenta to Blue
-    for (int i = 0; i < ranges; i++){colourTable.append(qRgb(0, (int)(i * scale), 255));}                           //generate Blue to Cyan
-    for (int i = 0; i < ranges; i++){colourTable.append(qRgb(0, 255, (int)((ranges - i) * scale)));}                //generate Cyan to Green
-    for (int i = 0; i < ranges; i++){colourTable.append(qRgb((int)(i * scale), (int)((ranges - i) * scale), 0));}   //generate Green to Red
-    for (int i = 0; i < ranges; i++){colourTable.append(qRgb(255, (int)(i * scale), 0));}                           //generate Red to Yellow
-    for (int i = 0; i < ranges; i++){colourTable.append(qRgb(255, 255, (int)(i * scale)));}                         //generate Yellow to White
-    for (int i = (qMin(min, max) + 7 * ranges); i < 65536; i++){colourTable.append(qRgb(255,255,255));}             // make numbers above max white
+    for (int i = 0; i < qMin(min, max); i++) colourTable.append(qRgb(0,0,0));                                               // make numbers below min black
+    for (int i = 0; i < ranges; i++) colourTable.append(qRgb(static_cast<int>(i * scale), 0, static_cast<int>(i * scale))); //generate Black to Magenta
+    for (int i = 0; i < ranges; i++) colourTable.append(qRgb(static_cast<int>((ranges - i) * scale), 0, 255));              //generate Magenta to Blue
+    for (int i = 0; i < ranges; i++) colourTable.append(qRgb(0, static_cast<int>(i * scale), 255));                         //generate Blue to Cyan
+    for (int i = 0; i < ranges; i++) colourTable.append(qRgb(0, 255, static_cast<int>((ranges - i) * scale)));              //generate Cyan to Green
+    for (int i = 0; i < ranges; i++) colourTable.append(qRgb(static_cast<int>(i * scale), static_cast<int>((ranges - i) * scale), 0));   //generate Green to Red
+    for (int i = 0; i < ranges; i++) colourTable.append(qRgb(255, static_cast<int>(i * scale), 0));                         //generate Red to Yellow
+    for (int i = 0; i < ranges; i++) colourTable.append(qRgb(255, 255, static_cast<int>(i * scale)));                       //generate Yellow to White
+    for (int i = (qMin(min, max) + 7 * ranges); i < 65536; i++) colourTable.append(qRgb(255,255,255));                      // make numbers above max white
 
     qDebug() << "LCII min" << min << "max" << max ;
     colourTableType = true;                                             // true is a LCII colour table
@@ -655,7 +655,7 @@ void ReadImage::getBinHeaderData()
     QImage image(iWidth * magnification, iHeight * magnification, QImage::Format_RGB32);
     image.fill(0xFF0606f0);
 
-    numberOfFrames = int(file.size() / (iWidth * (iHeight + 1) * 2));
+    numberOfFrames = static_cast<quint32>(file.size() / (iWidth * (iHeight + 1) * 2));
     emit nFramesChanged();        //set our number of frames to the widget
 
     totalPixels = iWidth * iHeight;
@@ -787,6 +787,7 @@ int ReadImage::getArfImage(int rdrw, int frame)
         }
 
         image = thisFrame.scaledToWidth(iWidth * magnification).mirrored(flipX, flipY);
+        qDebug() << "emit";
 
         if (exportFlag == 1){                                           // bin
             QDataStream out(&exportFile);
@@ -855,7 +856,6 @@ int ReadImage::getArfImage(int rdrw, int frame)
             setCTMax(imageMax);
             emit ctMaxChanged();}
         }
-
         emit newHistogram(histogram);
     return rdrw;
 }
@@ -915,7 +915,8 @@ int ReadImage::getBinImage(int rdrw, int frame)
 
           image = thisFrame.scaledToWidth(iWidth * magnification).mirrored(flipX, flipY);
 //        image = thisFrame.scaled(iWidth * magnification, iWidth * magnification, Qt::IgnoreAspectRatio).mirrored(flipX, flipY);
-
+          emit newHistogram(histogram);
+         
         if (exportFlag == 1){                                           // bin
             QDataStream out(&exportFile);
 
@@ -987,7 +988,6 @@ int ReadImage::getBinImage(int rdrw, int frame)
 //            recalcColourTable(ctMin, ctMax);
         }
 
-        emit newHistogram(histogram);
     return rdrw;
 }
 

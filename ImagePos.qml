@@ -108,7 +108,7 @@ Item {
         Image {
              width: 30; height: 30
              smooth: true
-             source: "Start.png"
+             source: "start.png"
          }
 
         Text {
@@ -140,7 +140,7 @@ Item {
         Image {
              width: 30; height: 30
              smooth: true
-             source: "End.png"
+             source: "end.png"
          }
 
 
